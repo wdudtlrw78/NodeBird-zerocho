@@ -79,3 +79,13 @@
       - 웬만한 B2C(기업이 소비자 상대로 행하는 인터넷 비지니스)서비스 할 때에는 Next 같은 SSR 지원하는 프레임워크를 고려해본다.
 
 - [SSR과 CSR 참고 사이트](https://d2.naver.com/helloworld/7804182)
+- Next에서 `Head` 를 지원해준다. `import Head from 'next/head';`
+
+## Ant Design
+
+```
+npm i antd
+npm i @ant-design/icons
+```
+
+- \_app.js 는 pages들의 공통 부분
