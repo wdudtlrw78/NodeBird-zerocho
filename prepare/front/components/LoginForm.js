@@ -18,8 +18,12 @@ const LoginForm = () => {
     setPassword(e.target.value);
   }, []);
 
+  const onSubmitForm = useCallback(() => {
+    // antd 에서는 자동으로 e.preventDefault가 적용되어있다.
+  }, []);
+
   return (
-    <Form>
+    <Form onFinish={onSubmitForm}>
       <div>
         <label htmlFor="user-id">아이디</label>
         <br />
@@ -38,6 +42,7 @@ const LoginForm = () => {
       </div>
       <ButtonWrapper>
         <Button type="primary" htmlType="submit" loading={false}>
+          {/* htmlType="submit" 붙이면 Form에서 onFinish가 호출이 된다.*/}
           회원가입
         </Button>
       </ButtonWrapper>

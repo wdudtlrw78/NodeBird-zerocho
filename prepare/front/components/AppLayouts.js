@@ -6,8 +6,12 @@ import styled from "styled-components";
 import UserProfile from "./UserProfile";
 import LoginForm from "./LoginForm";
 
+// - xs : 모바일
+// - sm : 태블릿
+// - md : 작은 데스크탑
+
 const SearchInput = styled(Input.Search)`
-  vertical-aline: middle;
+  vertical-align: middle;
 `;
 
 const AppLayouts = ({ children }) => {
