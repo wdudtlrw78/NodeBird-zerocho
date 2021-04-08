@@ -26,6 +26,7 @@
 
   - 시간적 손실 방지
   - 백엔드 개발자가 API 만들어주기까지 대기하는 것 보다 Dummy Data와 함께 프론트 화면 만들기
+  - 가상의 State 만들기 (실무에서는 Redux나 MobX 상태관리)
 
   <br>
 
@@ -95,10 +96,3 @@
 npm i antd
 npm i @ant-design/icons
 ```
-
-- \_app.js 는 pages들의 공통 부분
-
-- xs : 모바일
-- sm : 태블릿
-- md : 작은 데스크탑
-- `target="_blank"`적용할 때 보안의 위협이 있어서 항상 `rel="noreferrer noopener"` 적용한다.`

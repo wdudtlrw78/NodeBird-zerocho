@@ -40,13 +40,17 @@ const AppLayouts = ({ children }) => {
       </Menu>
       <Row gutter={8}>
         <Col xs={24} md={6}>
-          {isLoggedIn ? <UserProfile /> : <LoginForm />}
+          {isLoggedIn ? (
+            <UserProfile setIsLoggedIn={setIsLoggedIn} />
+          ) : (
+            <LoginForm setIsLoggedIn={setIsLoggedIn} />
+          )}
         </Col>
         <Col xs={24} md={12}>
           {children}
         </Col>
         <Col xs={24} md={6}>
-          {/*`target="_blank"`적용할 때 보안의 위협이 있어서 항상 `rel="noreferrer noopener"` 적용한다.*/}
+          {/*target="_blank" 적용할 때 보안의 위협이 있어서 항상 rel="noreferrer noopener" 적용한다.*/}
           <a
             href="https://www.google.com"
             target="_blank"

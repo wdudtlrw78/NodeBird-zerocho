@@ -1,4 +1,6 @@
 import React, { useCallback, useState } from "react";
+import Link from "next/link";
+import PropTypes from "prop-types";
 import { Form, Input, Button } from "antd";
 import styled from "styled-components";
 
@@ -6,7 +8,11 @@ const ButtonWrapper = styled.div`
   margin-top: 10px;
 `;
 
-const LoginForm = () => {
+const FormWrapper = styled(Form)`
+  padding: 10px;
+`;
+
+const LoginForm = ({ setIsLoggedIn }) => {
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
 
@@ -19,11 +25,13 @@ const LoginForm = () => {
   }, []);
 
   const onSubmitForm = useCallback(() => {
-    // antd 에서는 자동으로 e.preventDefault가 적용되어있다.
-  }, []);
+    // antd 에서는 자동 e.preventDefault가 적용되어있다.
+    console.log(id, password);
+    setIsLoggedIn(true);
+  }, [id, password]);
 
   return (
-    <Form onFinish={onSubmitForm}>
+    <FormWrapper onFinish={onSubmitForm}>
       <div>
         <label htmlFor="user-id">아이디</label>
         <br />
@@ -43,11 +51,20 @@ const LoginForm = () => {
       <ButtonWrapper>
         <Button type="primary" htmlType="submit" loading={false}>
           {/* htmlType="submit" 붙이면 Form에서 onFinish가 호출이 된다.*/}
-          회원가입
+          로그인
         </Button>
+        <Link href="/signup">
+          <a>
+            <Button>회원가입</Button>
+          </a>
+        </Link>
       </ButtonWrapper>
-    </Form>
+    </FormWrapper>
   );
+};
+
+LoginForm.propTypes = {
+  setIsLoggedIn: PropTypes.node.isRequired,
 };
 
 export default LoginForm;
