@@ -27,7 +27,11 @@
   - 시간적 손실 방지
   - 백엔드 개발자가 API 만들어주기까지 대기하는 것 보다 Dummy Data와 함께 프론트 화면 만들기
 
+  <br>
+
 ## SSR, CSR and Next.JS
+
+<br>
 
 - 전통적인 <b>SSR</b> 방식
   - 모든 데이터가 매핑된 서비스 페이지를 클라이언트(브라우저)에게 바로 보여줄 수 있다.
@@ -81,7 +85,11 @@
 - [SSR과 CSR 참고 사이트](https://d2.naver.com/helloworld/7804182)
 - Next에서 `Head` 를 지원해준다. `import Head from 'next/head';`
 
+  <br>
+
 ## Ant Design
+
+  <br>
 
 ```
 npm i antd
@@ -89,3 +97,8 @@ npm i @ant-design/icons
 ```
 
 - \_app.js 는 pages들의 공통 부분
+
+- xs : 모바일
+- sm : 태블릿
+- md : 작은 데스크탑
+- `target="_blank"`적용할 때 보안의 위협이 있어서 항상 `rel="noreferrer noopener"` 적용한다.`
