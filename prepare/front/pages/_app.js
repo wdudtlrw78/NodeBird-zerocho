@@ -22,4 +22,4 @@ NodeBird.propTypes = {
   Component: PropTypes.elementType.isRequired,
 };
 
-export default wrapper.withRedux(NodeBird);
+export default wrapper.withRedux(NodeBird); // next-redux 자체에서 provider를 제공해주기 때문에 대신에 HOC방식으로 wrapper.withRedux 감싸준다.
