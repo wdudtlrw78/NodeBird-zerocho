@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import PropTypes from "prop-types";
-import { Card, Button, Avatar, Popover } from "antd";
+import { Card, Button, Avatar, Popover, List, Comment } from "antd";
 import {
   RetweetOutlined,
   HeartOutlined,
@@ -9,11 +9,17 @@ import {
   HeartTwoTone,
 } from "@ant-design/icons";
 import { useSelector } from "react-redux";
+
 import PostImages from "./PostImages";
+import CommentForm from "./CommentForm";
 
 const PostCard = ({ post }) => {
   const [liked, setLiked] = useState(false);
   const [CommentFormOpend, setCommentFormOpend] = useState(false);
+
+  // 의문점: user.js의 initialState 내 정보가 me인데 어떻게 state.me가아니고 state.user.me가 되는지
+  // reducer/index.js에 rootReducer가 state고, user와 post는 각각 state.user, state.post가 된다.
+  // user.js의 me는 state.user.me가 된다.
   const id = useSelector((state) => state.user.me?.id); // optional channing id가 없으면 undifined 반환
 
   const onToggleLike = useCallback(() => {
@@ -67,9 +73,27 @@ const PostCard = ({ post }) => {
           description={post.content}
         />
       </Card>
-      {CommentFormOpend && <div>댓글 부분</div>}
-      {/* <CommentForm />
-        <Comments /> */}
+      {CommentFormOpend && (
+        <div>
+          {/* post 넘겨주는 이유 : 댓글을 작성할 때 댓글은 게시글에 속해있다. 
+        어떤 게시글에 댓글을 달건지 정보 게시글의 Id 가 필요하다.*/}
+          <CommentForm post={post} />
+          <List
+            header={`${post.Comments.length}개의 댓글`}
+            itemLayout="horizontal"
+            dataSource={post.Comments}
+            renderItem={(item) => (
+              <li>
+                <Comment
+                  author={item.User.nickname}
+                  avatar={<Avatar>{item.User.nickname[0]}</Avatar>}
+                  content={item.content}
+                />
+              </li>
+            )}
+          />
+        </div>
+      )}
     </div>
   );
 };
@@ -83,12 +107,7 @@ PostCard.propTypes = {
     }),
     content: PropTypes.string,
     createdAt: PropTypes.object,
-    Comments: PropTypes.shape({
-      User: PropTypes.shape({
-        nickname: PropTypes.string,
-      }),
-      content: PropTypes.string,
-    }),
+    Comments: PropTypes.arrayOf(PropTypes.object),
     Images: PropTypes.arrayOf(PropTypes.object),
   }).isRequired,
 };

@@ -20,6 +20,10 @@ const rootReducer = combineReducers({
         return state;
     }
   },
+
+  // user랑 post를 합친다.
+  // rootReducer가 state고, user와 post는 각각 state.user, state.post가 된다.
+  // user.js의 me는 state.user.me가 된다.
   user,
   post,
 });
