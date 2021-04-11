@@ -19,7 +19,10 @@ const AppLayouts = ({ children }) => {
   // const [isLoggedIn, setIsLoggedIn] = useState(false); 더미데이터
   // useSelector는 npm i react-redux
   // isLoggedIn이 변경되면 알아서 AppLayouts 컴포넌트가 리렌더링 된다.
-  const isLoggedIn = useSelector((state) => state.user.isLoggedIn); // redux
+
+  // const isLoggedIn = useSelector((state) => state.user.isLoggedIn); // redux
+  // 또는 구조분해 할당도 가능
+  const { isLoggedIn } = useSelector((state) => state.user);
 
   return (
     <div>
