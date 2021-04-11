@@ -59,7 +59,7 @@ const dummyPost = {
   content: "더미데이터 입니다.",
   User: {
     id: 1,
-    nicknmae: "모모",
+    nickname: "모모",
   },
   Images: [],
   Comments: [],
