@@ -5,17 +5,54 @@ export const initialState = {
   loginData: {},
 };
 
-// action creator
 export const loginAction = (data) => {
+  return (dispatch) => {
+    dispatch(loginRequestAction());
+    axios.post("/api/login").then(() => {
+      dispatch(loginSuccessAction());
+    });
+  };
+};
+
+// action creator
+export const loginRequestAction = (data) => {
   return {
-    type: "LOG_IN",
+    type: "LOG_IN_REQUEST",
     data,
   };
 };
 
-export const logoutAction = (data) => {
+export const loginSuccessAction = (data) => {
   return {
-    type: "LOG_OUT",
+    type: "LOG_IN_SUCCESS",
+    data,
+  };
+};
+
+export const loginFailureAction = (data) => {
+  return {
+    type: "LOG_IN_FAILURE",
+    data,
+  };
+};
+
+export const logoutRequestAction = (data) => {
+  return {
+    type: "LOG_OUT_REQUEST",
+    data,
+  };
+};
+
+export const logoutSuccessAction = (data) => {
+  return {
+    type: "LOG_OUT_SUCCESS",
+    data,
+  };
+};
+
+export const logoutFailureAction = (data) => {
+  return {
+    type: "LOG_OUT_FAILURE",
     data,
   };
 };
