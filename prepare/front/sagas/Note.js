@@ -1,30 +1,30 @@
-import { all, fork, put, takeEvery, delay } from "redux-saga/effects";
-// import axios from "axios";
+import { all, fork, put, call, takeEvery, delay } from "redux-saga/effects";
+import axios from "axios";
 
-// function logInAPI(data) {
-//   // 주의할점 뒤에 *붙이면 에러발생
-//   // 서버에 요청을 보낸다.
-//   // 그 요청의 결과 값을 logIn 함수에서 받는다
+function logInAPI(data) {
+  // 주의할점 뒤에 *붙이면 에러발생
+  // 서버에 요청을 보낸다.
+  // 그 요청의 결과 값을 logIn 함수에서 받는다
 
-//   // 그리고 요청만 보내는게 아니라 실제 data를 넣어서 로그인을 해줘야한다.
-//   // 그 data는
-//   // watchLogIn() 에서 'LOG_IN_REQUEST'할 때 type: 'LOG_IN_REQUEST', data: 로그인과 관련된 데이터가 있다.
-//   // 그러면 LOG_IN_REQUEST에 대한 action(logIn)자체가 logIn(action) 매개변수로 전달이 된다.
-//   // action.type 하면 login request가 나올거고 action.data하면 로그인 데이터가 들어있다.
-//   // action.data 를 logIn(action)에서 const result = yield call(logInAPI, action.data); logInAPI에 넣어준다.
-//   // 그러면 logInAPI(data)로 들어간다.
-//   return axios.post("/api/login", data);
-// }
+  // 그리고 요청만 보내는게 아니라 실제 data를 넣어서 로그인을 해줘야한다.
+  // 그 data는
+  // watchLogIn() 에서 'LOG_IN_REQUEST'할 때 type: 'LOG_IN_REQUEST', data: 로그인과 관련된 데이터가 있다.
+  // 그러면 LOG_IN_REQUEST에 대한 action(logIn)자체가 logIn(action) 매개변수로 전달이 된다.
+  // action.type 하면 login request가 나올거고 action.data하면 로그인 데이터가 들어있다.
+  // action.data 를 logIn(action)에서 const result = yield call(logInAPI, action.data); logInAPI에 넣어준다.
+  // 그러면 logInAPI(data)로 들어간다.
+  return axios.post("/api/login", data);
+}
 
-// // function logOutAPI() {
-// //   return axios.post("/api/logout");
-// // }
+function logOutAPI() {
+  return axios.post("/api/logout");
+}
 
-// // function addPostAPI() {
-// //   return axios.post("/api/post");
-// // }
+function addPostAPI() {
+  return axios.post("/api/post");
+}
 
-function* logIn() {
+function* logIn(action) {
   // 그 요청의 결과 값을 logIn 함수에서 받는다
 
   // 성공 결과는 result.data,
@@ -39,48 +39,51 @@ function* logIn() {
   // call은 axios.post('/api/login)).then(() =>)
   // fork는 axios.post('/api/login))
   try {
-    // const result = yield call(logInAPI, action.data); // 서버가 아직 없기 때문에 call 하면 에러가 발생한다. 없는 서버에 요청해서 그래서 가짜로 만든다.
+    const result = yield call(logInAPI, action.data); // 서버가 아직 없기 때문에 call 하면 에러가 발생한다. 없는 서버에 요청해서 그래서 가짜로 만든다.
     yield delay(1000); // delay: setTimeout 역할 // 서버 구현되기 전까지 dealy로 비동기적인 효과를 준다.
+
     yield put({
       type: "LOG_IN_SUCCESS",
-      // data: result.data,
+      data: result.data,
     });
   } catch (err) {
     yield put({
       type: "LOG_IN_FAILURE",
-      // data: err.response.data,
+      data: err.response.data,
     });
   }
 }
 
 function* logOut() {
   try {
-    // const result = yield call(logOutAPI);
+    const result = yield call(logOutAPI);
     yield delay(1000);
+
     yield put({
       type: "LOG_OUT_SUCCESS",
-      // data: result.data,
+      data: result.data,
     });
   } catch (err) {
     yield put({
       type: "LOG_OUT_FAILURE",
-      // data: err.response.data,
+      data: err.response.data,
     });
   }
 }
 
 function* addPost() {
   try {
-    // const result = yield call(addPostAPI);
+    const result = yield call(addPostAPI);
     yield delay(1000);
+
     yield put({
       type: "ADD_POST_SUCCESS",
-      // data: result.data,
+      data: result.data,
     });
   } catch (err) {
     yield put({
       type: "ADD_POST_FAILURE",
-      // data: err.response.data,
+      data: err.response.data,
     });
   }
 }
@@ -113,8 +116,6 @@ function* watchLogin() {
 
   // takeLeding은 반대로 첫번째 것만 실행
   // 디바운싱과 쓰로틀링이 비슷한데 차이점은 출처 : 제로초 블로그 https://www.zerocho.com/category/JavaScript/post/59a8e9cb15ac0000182794fa
-  // takeLatest는 모두 호출하고 이전게 완료되기 전에 다음게 호출되면 이전걸 취소한다. 주로 스크롤을 올리거나 내릴 때
-  // debounce는 호출되고 일정 시간이 지나야만 실제로 실행되고 시간이 지나기전에 재호출되면 이전게 취소된다. 주로 ajax 검색
 }
 
 function* watchLogOut() {
@@ -136,7 +137,7 @@ export default function* rootSaga() {
 
 // 질문 모음
 
-//1. takeEvery나 takeLatest에 while(true) 와 같은 기능이 있다고 이해했는데 맞는건가요?
+// 1. takeEvery나 takeLatest에 while(true) 와 같은 기능이 있다고 이해했는데 맞는건가요?
 // 1. 맞습니다.
 
 // 2. yield delay나 yield put 같은 것은 왜 사라지지 않나요?
