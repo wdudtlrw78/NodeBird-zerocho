@@ -116,6 +116,8 @@ function* watchLogin() {
 
   // takeLeding은 반대로 첫번째 것만 실행
   // 디바운싱과 쓰로틀링이 비슷한데 차이점은 출처 : 제로초 블로그 https://www.zerocho.com/category/JavaScript/post/59a8e9cb15ac0000182794fa
+  // takeLatest는 모두 호출하고 이전게 완료되기 전에 다음게 호출되면 이전걸 취소한다. 주로 스크롤을 올리거나 내릴 때
+  // debounce는 호출되고 일정 시간이 지나야만 실제로 실행되고 시간이 지나기전에 재호출되면 이전게 취소된다. 주로 ajax 검색
 }
 
 function* watchLogOut() {

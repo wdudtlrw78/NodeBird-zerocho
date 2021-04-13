@@ -2,10 +2,10 @@ import React, { useCallback } from "react";
 import Link from "next/link";
 import { Form, Input, Button } from "antd";
 import styled from "styled-components";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 
 import useInput from "../hooks/useInput";
-import { loginAction } from "../reducers/user";
+import { loginRequestAction } from "../reducers/user";
 
 const ButtonWrapper = styled.div`
   margin-top: 10px;
@@ -17,6 +17,7 @@ const FormWrapper = styled(Form)`
 
 const LoginForm = () => {
   const dispatch = useDispatch();
+  const { isLoggingIn } = useSelector((state) => state.user);
   const [id, onChangeId] = useInput("");
   const [password, onChangePassword] = useInput("");
 
@@ -24,8 +25,8 @@ const LoginForm = () => {
     // antd 에서는 자동 e.preventDefault가 적용되어있다.
 
     // setIsLoggedIn(true);
-
-    dispatch(loginAction({ id, password }));
+    console.log(id, password);
+    dispatch(loginRequestAction({ id, password }));
   }, [id, password]);
 
   return (
@@ -47,7 +48,7 @@ const LoginForm = () => {
         />
       </div>
       <ButtonWrapper>
-        <Button type="primary" htmlType="submit" loading={false}>
+        <Button type="primary" htmlType="submit" loading={isLoggingIn}>
           {/* htmlType="submit" 붙이면 Form에서 onFinish가 호출이 된다.*/}
           로그인
         </Button>
