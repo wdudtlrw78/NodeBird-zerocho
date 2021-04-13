@@ -15,8 +15,9 @@ const loggerMiddleware = ({ dispatch, getState }) => (next) => (action) => {
 
 // 여기서 applyMiddleware로 loggerMiddleware를 감싸면 알아서 위 applyMiddleware함수가 dispatch나 getState같은 인자들을 넣어준다
 
-const configureStore = () => {
+const configureStore = (context) => {
   // 일반 redux랑 비슷하다.
+  console.log(context);
   const sagaMiddleware = createSagaMiddleware();
   const middlewares = [sagaMiddleware, loggerMiddleware];
   const enhancer =
@@ -25,12 +26,12 @@ const configureStore = () => {
       : composeWithDevTools(applyMiddleware(...middlewares));
 
   const store = createStore(reducer, enhancer);
-  store.dispatch({
-    type: "CHANGE_NICKNAME",
-    data: "oMoM",
-  });
+  // store.dispatch({
+  //   type: "CHANGE_NICKNAME",
+  //   data: "oMoM",
+  // });
 
-  store.sagaTask = sagaMiddleware(rootSaga);
+  store.sagaTask = sagaMiddleware.run(rootSaga);
   return store;
 };
 
