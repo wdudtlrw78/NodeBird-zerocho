@@ -1,25 +1,31 @@
 import { Form, Button, Input } from "antd";
-import React, { useCallback, useState, useRef } from "react";
+import React, { useCallback, useRef, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import useInput from "../hooks/useInput";
 import { addPost } from "../reducers/post";
 
 const PostForm = () => {
-  const { imagePaths } = useSelector((state) => state.post);
+  const { imagePaths, addPostDone } = useSelector((state) => state.post);
   const dispatch = useDispatch();
-  const imageInput = useRef(null);
   const inputFocus = useRef(null);
-  const [text, setText] = useState("");
+  const [text, onChangeText, setText] = useInput("");
 
-  const onChangeText = useCallback((e) => {
-    setText(e.target.value);
-  }, []);
+  useEffect(() => {
+    // 짹쨱해서 트윗을 날리면 다시 보낼 수 있게 초기화가 되어야 한다.
+    // 게시글 올렸는데 서버에서 문제가 발생하면 setText로 지워버리는 현상이 발생해서
+    // addPostDone 상태일 때 지워야한다.
+    if (addPostDone) {
+      setText("");
+    }
+  }, [addPostDone]);
 
   const onSubmit = useCallback(() => {
-    dispatch(addPost);
-    setText("");
+    dispatch(addPost(text));
+    // setText(''); useEffect 이동
     inputFocus.current.focus();
-  }, [inputFocus.current]);
+  }, [text, inputFocus.current]);
 
+  const imageInput = useRef(null);
   const onClickImageUpload = useCallback(() => {
     imageInput.current.click();
   }, [imageInput.current]);
