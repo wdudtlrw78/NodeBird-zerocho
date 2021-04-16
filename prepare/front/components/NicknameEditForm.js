@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { Form, Input } from "antd";
+import React, { useMemo } from 'react';
+import { Form, Input } from 'antd';
 
 //const a = () => {} 이렇게 되면 마지막 {}가 객체인지 함수의 몸통인지 헷갈립니다.
 //a = () => {} 이런 경우 함수의 몸통이고
@@ -7,9 +7,9 @@ import { Form, Input } from "antd";
 const NicknameEditForm = () => {
   const style = useMemo(
     () => ({
-      marginBottom: "20px",
-      border: "1px solid #d9d9d9",
-      padding: "20px",
+      marginBottom: '20px',
+      border: '1px solid #d9d9d9',
+      padding: '20px',
     }),
     []
   );

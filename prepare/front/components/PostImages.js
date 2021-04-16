@@ -1,7 +1,7 @@
-import React, { useCallback, useState } from "react";
-import PropTypes from "prop-types";
-import { PlusOutlined } from "@ant-design/icons";
-import ImagesZoom from "./ImagesZoom";
+import React, { useCallback, useState } from 'react';
+import PropTypes from 'prop-types';
+import { PlusOutlined } from '@ant-design/icons';
+import ImagesZoom from './ImagesZoom';
 
 const PostImages = ({ images }) => {
   const [showImagesZoom, setShowImagesZoom] = useState(false);
@@ -35,14 +35,14 @@ const PostImages = ({ images }) => {
         {/* role: 시각장애인분들을 위해 스크린 리더에서 굳이 얘를 클릭 할 필요있다 여부를 안알려줄때만 넣어준다. */}
         <img
           role="presentation"
-          style={{ width: "50%", display: "inline-block" }}
+          style={{ width: '50%', display: 'inline-block' }}
           src={images[0].src}
           alt={images[0].src}
           onClick={onZoom}
         />
         <img
           role="presentation"
-          style={{ width: "50%", display: "inline-block" }}
+          style={{ width: '50%', display: 'inline-block' }}
           src={images[1].src}
           alt={images[1].src}
           onClick={onZoom}
@@ -57,7 +57,7 @@ const PostImages = ({ images }) => {
     <>
       <img
         role="presentation"
-        style={{ width: "50%", display: "inline-block" }}
+        style={{ width: '50%', display: 'inline-block' }}
         src={images[0].src}
         alt={images[0].src}
         onClick={onZoom}
@@ -65,10 +65,10 @@ const PostImages = ({ images }) => {
       <div
         role="presentation"
         style={{
-          display: "inline-block",
-          width: "50%",
-          textAlign: "center",
-          verticalAlign: "middle",
+          display: 'inline-block',
+          width: '50%',
+          textAlign: 'center',
+          verticalAlign: 'middle',
         }}
         onClick={onZoom}
       >

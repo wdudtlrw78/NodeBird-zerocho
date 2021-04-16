@@ -1,27 +1,25 @@
-import React, { useCallback, useState } from "react";
-import PropTypes from "prop-types";
-import { Card, Button, Avatar, Popover, List, Comment } from "antd";
+import React, { useCallback, useState } from 'react';
+import PropTypes from 'prop-types';
+import { Card, Button, Avatar, Popover, List, Comment } from 'antd';
 import {
   RetweetOutlined,
   HeartOutlined,
   MessageOutlined,
   EllipsisOutlined,
   HeartTwoTone,
-} from "@ant-design/icons";
-import { useSelector } from "react-redux";
+} from '@ant-design/icons';
+import { useDispatch, useSelector } from 'react-redux';
 
-import PostImages from "./PostImages";
-import CommentForm from "./CommentForm";
-import PostCardContent from "./PostCardContent";
+import PostImages from './PostImages';
+import CommentForm from './CommentForm';
+import PostCardContent from './PostCardContent';
+import { REMOVE_POST_REQUEST } from '../reducers/post';
 
 const PostCard = ({ post }) => {
+  const dispatch = useDispatch();
+  const { removePostLoading } = useSelector((state) => state.post);
   const [liked, setLiked] = useState(false);
   const [CommentFormOpend, setCommentFormOpend] = useState(false);
-
-  // 의문점: user.js의 initialState 내 정보가 me인데 어떻게 state.me가아니고 state.user.me가 되는지
-  // reducer/index.js에 rootReducer가 state고, user와 post는 각각 state.user, state.post가 된다.
-  // user.js의 me는 state.user.me가 된다.
-  const id = useSelector((state) => state.user.me?.id); // optional channing id가 없으면 undifined 반환
 
   const onToggleLike = useCallback(() => {
     setLiked((prev) => !prev);
@@ -30,6 +28,18 @@ const PostCard = ({ post }) => {
   const onToggleComment = useCallback(() => {
     setCommentFormOpend((prev) => !prev);
   }, []);
+
+  const onRemovePost = useCallback(() => {
+    dispatch({
+      type: REMOVE_POST_REQUEST,
+      data: post.id,
+    });
+  }, []);
+
+  // 의문점: user.js의 initialState 내 정보가 me인데 어떻게 state.me가아니고 state.user.me가 되는지
+  // reducer/index.js에 rootReducer가 state고, user와 post는 각각 state.user, state.post가 된다.
+  // user.js의 me는 state.user.me가 된다.
+  const id = useSelector((state) => state.user.me?.id); // optional channing id가 없으면 undifined 반환
 
   return (
     <div style={{ marginBottom: 20 }}>
@@ -56,7 +66,13 @@ const PostCard = ({ post }) => {
                 {id && post.User.id === id ? (
                   <>
                     <Button>수정</Button>
-                    <Button type="danger">삭제</Button>
+                    <Button
+                      type="danger"
+                      loading={removePostLoading}
+                      onClick={onRemovePost}
+                    >
+                      삭제
+                    </Button>
                   </>
                 ) : (
                   <Button>신고</Button>

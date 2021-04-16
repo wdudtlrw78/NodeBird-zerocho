@@ -1,5 +1,5 @@
-import { all, delay, fork, put, takeLatest } from "redux-saga/effects";
-import axios from "axios";
+import { all, delay, fork, put, takeLatest } from 'redux-saga/effects';
+import axios from 'axios';
 import {
   LOG_IN_FAILURE,
   LOG_IN_REQUEST,
@@ -10,16 +10,16 @@ import {
   SIGN_UP_FAILURE,
   SIGN_UP_REQUEST,
   SIGN_UP_SUCCESS,
-} from "../reducers/user";
+} from '../reducers/user';
 
 function logInAPI(data) {
-  return axios.post("/api/login", data);
+  return axios.post('/api/login', data);
 }
 
 function* logIn(action) {
   try {
     // const result = yield call(logInAPI, action.data); // 서버가 아직 없기 때문에 call 하면 에러가 발생한다. 없는 서버에 요청해서 그래서 가짜로 만든다.
-    console.log("saga Login");
+    console.log('saga Login');
     yield delay(1000); // delay: setTimeout 역할 // 서버 구현되기 전까지 dealy로 비동기적인 효과를 준다.
     yield put({
       type: LOG_IN_SUCCESS,
@@ -35,7 +35,7 @@ function* logIn(action) {
 }
 
 function logOutAPI(data) {
-  return axios.post("/api/logout", data);
+  return axios.post('/api/logout', data);
 }
 
 function* logOut() {
@@ -56,7 +56,7 @@ function* logOut() {
 }
 
 function signUpAPI(data) {
-  return axios.post("/api/signup", data);
+  return axios.post('/api/signup', data);
 }
 
 function* signUp() {

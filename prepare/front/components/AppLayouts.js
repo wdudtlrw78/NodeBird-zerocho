@@ -1,12 +1,12 @@
-import React from "react";
-import PropTypes from "prop-types";
-import Link from "next/link";
-import { Input, Menu, Row, Col } from "antd";
-import styled from "styled-components";
-import UserProfile from "./UserProfile";
-import LoginForm from "./LoginForm";
-import { useSelector } from "react-redux";
-import { createGlobalStyle } from "styled-components";
+import React from 'react';
+import PropTypes from 'prop-types';
+import Link from 'next/link';
+import { Input, Menu, Row, Col } from 'antd';
+import styled from 'styled-components';
+import { createGlobalStyle } from 'styled-components';
+import { useSelector } from 'react-redux';
+import UserProfile from './UserProfile';
+import LoginForm from './LoginForm';
 
 // - xs : 모바일
 // - sm : 태블릿
@@ -55,7 +55,7 @@ const AppLayouts = ({ children }) => {
           </Link>
         </Menu.Item>
         <Menu.Item>
-          <SearchInput enterButton style={{ verticalAlign: "middle" }} />
+          <SearchInput enterButton style={{ verticalAlign: 'middle' }} />
         </Menu.Item>
         <Menu.Item>
           <Link href="/signup">

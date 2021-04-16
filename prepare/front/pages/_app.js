@@ -1,9 +1,9 @@
-import React from "react";
-import PropTypes from "prop-types";
-import Head from "next/head";
-import "antd/dist/antd.css";
-import withReduxSaga from "next-redux-saga";
-import wrapper from "../store/configuerStore";
+import React from 'react';
+import PropTypes from 'prop-types';
+import Head from 'next/head';
+import 'antd/dist/antd.css';
+import withReduxSaga from 'next-redux-saga';
+import wrapper from '../store/configuerStore';
 
 // - \_app.js 는 pages들의 공통 부분
 
