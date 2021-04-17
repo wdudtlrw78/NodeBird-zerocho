@@ -223,3 +223,9 @@ action 기록들이 전부 남아있기 때문에 action 하나 실행 할때마
 
 - shortid
 - faker
+
+## react-virtualized를 활용한 무한 스크롤
+
+(react-virtualized)[https://github.com/bvaughn/react-virtualized]
+
+- 수 많은 데이터가 로딩 되어있는데, 화면에는 3개만 그려주고 나머지는 메모리에 저장된다.

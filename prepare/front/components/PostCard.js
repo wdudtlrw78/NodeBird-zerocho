@@ -1,13 +1,7 @@
 import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Card, Button, Avatar, Popover, List, Comment } from 'antd';
-import {
-  RetweetOutlined,
-  HeartOutlined,
-  MessageOutlined,
-  EllipsisOutlined,
-  HeartTwoTone,
-} from '@ant-design/icons';
+import { RetweetOutlined, HeartOutlined, MessageOutlined, EllipsisOutlined, HeartTwoTone } from '@ant-design/icons';
 import { useDispatch, useSelector } from 'react-redux';
 
 import PostImages from './PostImages';
@@ -49,11 +43,7 @@ const PostCard = ({ post }) => {
         actions={[
           <RetweetOutlined key="retweet" />,
           liked ? (
-            <HeartTwoTone
-              twoToneColor="#eb2f96"
-              key="heart"
-              onClick={onToggleLike}
-            />
+            <HeartTwoTone twoToneColor="#eb2f96" key="heart" onClick={onToggleLike} />
           ) : (
             <HeartOutlined key="heart" onClick={onToggleLike} />
           ),
@@ -66,11 +56,7 @@ const PostCard = ({ post }) => {
                 {id && post.User.id === id ? (
                   <>
                     <Button>수정</Button>
-                    <Button
-                      type="danger"
-                      loading={removePostLoading}
-                      onClick={onRemovePost}
-                    >
+                    <Button type="danger" loading={removePostLoading} onClick={onRemovePost}>
                       삭제
                     </Button>
                   </>
@@ -96,9 +82,9 @@ const PostCard = ({ post }) => {
         어떤 게시글에 댓글을 달건지 정보 게시글의 Id 가 필요하다.*/}
           <CommentForm post={post} />
           <List
-            header={`${post.Comments.length}개의 댓글`}
+            header={`${post.Comments ? post.Comments.length : 0} 댓글`}
             itemLayout="horizontal"
-            dataSource={post.Comments}
+            dataSource={post.Comments || []}
             renderItem={(item) => (
               <li>
                 <Comment
@@ -118,14 +104,12 @@ const PostCard = ({ post }) => {
 PostCard.propTypes = {
   post: PropTypes.shape({
     id: PropTypes.number,
-    User: PropTypes.shape({
-      id: PropTypes.number,
-      nickname: PropTypes.string,
-    }),
+    User: PropTypes.object,
+    UserId: PropTypes.number,
     content: PropTypes.string,
     createdAt: PropTypes.object,
-    Comments: PropTypes.arrayOf(PropTypes.object),
-    Images: PropTypes.arrayOf(PropTypes.object),
+    Comments: PropTypes.arrayOf(PropTypes.any),
+    Images: PropTypes.arrayOf(PropTypes.any),
   }).isRequired,
 };
 

@@ -25,6 +25,7 @@
     "object-curly-newline": "off",
     "linebreak-style": "off",
     "max-len": "off",
-    "spaced-comment": "off"
+    "spaced-comment": "off",
+    "no-param-reassign": "off"
   }
 }

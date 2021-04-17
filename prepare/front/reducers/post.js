@@ -1,4 +1,6 @@
 import shortId from 'shortid';
+import produce from 'immer';
+import faker from 'faker';
 
 export const initialState = {
   // 더미데이터
@@ -12,63 +14,59 @@ export const initialState = {
   // 서버쪽에서 데이터를 어떻게 보낼 것인지 미리 물어보면 좋다.
 
   // 대문자 얘들은 서버에서 주는 얘들인데 ID가 고유하게 필요하다 ( 나중에 Key로 판단 )
-  mainPosts: [
-    {
-      id: 1,
+  mainPosts: [],
+
+  imagePaths: [], // 이미지 업로드할 때 필요한 데이터 저장소
+
+  // 데이터가 수백만게 있다고 하면 사람들은 보다 지친다. 그럼 데이터가 80개 밖에 없다면 80개 다 보고나서 데이터가 불러올때가 없을 때 대비
+  hasMorePost: true, // 처음 (0개) 일 때는 가져오려는 시도 를 해야한다.
+
+  loadPostsLoading: false, // 로딩
+  loadPostsDone: false,
+  loadPostsError: null,
+
+  addPostLoading: false, // 게시글 추가
+  addPostDone: false,
+  addPostError: null,
+
+  removePostLoading: false, // 게시글 삭제
+  removePostDone: false,
+  removePostError: null,
+
+  addCommentLoading: false, // 댓글 추가
+  addCommentDone: false,
+  addCommentError: null,
+};
+
+export const generateDummyPost = (number) =>
+  Array(number)
+    .fill()
+    .map(() => ({
+      id: shortId.generate(),
       User: {
-        id: 1,
-        nickname: '모모',
+        id: shortId.generate(),
+        nickname: faker.name.findName(),
       },
-      content: '첫 번째 게시글 #해시태그 #익스프레스',
+      content: faker.lorem.paragraph(),
       Images: [
         {
-          id: shortId.generate(),
-          src:
-            'https://bookthumb-phinf.pstatic.net/cover/137/995/13799585.jpg?udate=20180726',
-        },
-        {
-          id: shortId.generate(),
-          src: 'https://gimg.gilbut.co.kr/book/BN001958/rn_view_BN001958.jpg',
-        },
-        {
-          id: shortId.generate(),
-          src: 'https://gimg.gilbut.co.kr/book/BN001958/rn_view_BN001958.jpg',
+          src: faker.image.image(),
         },
       ],
       Comments: [
         {
-          id: shortId.generate(),
           User: {
             id: shortId.generate(),
-            nickname: 'MoMo',
+            nickname: faker.name.findName(),
           },
-          content: 'Test!',
-        },
-        {
-          id: shortId.generate(),
-          User: {
-            id: shortId.generate(),
-            nickname: 'PaPa',
-          },
-          content: '두근두근',
+          content: faker.lorem.sentence(),
         },
       ],
-    },
-  ],
+    }));
 
-  imagePaths: [], // 이미지 업로드할 때 필요한 데이터 저장소
-  addPostLoading: false, // 게시글 추가가 완료됬을 때 true
-  addPostDone: false,
-  addPostError: null,
-
-  removePostLoading: false, // 게시글 삭제가 완료됬을 때 true
-  removePostDone: false,
-  removePostError: null,
-
-  addCommentLoading: false, // 댓글 추가가 완료됬을 때 true
-  addCommentDone: false,
-  addCommentError: null,
-};
+export const LOAD_POSTS_REQUEST = 'LOAD_POSTS_REQUEST';
+export const LOAD_POSTS_SUCCESS = 'LOAD_POSTS_SUCCESS';
+export const LOAD_POSTS_FAILURE = 'LOAD_POSTS_FAILURE';
 
 export const ADD_POST_REQUEST = 'ADD_POST_REQUEST';
 export const ADD_POST_SUCCESS = 'ADD_POST_SUCCESS';
@@ -122,77 +120,86 @@ const dummyComment = (data) => ({
 // 서버 개발자와 의사소통이 되지않으면 한 번에 만들기가 어렵다.
 // 예를들어 User, Images 등이 소문자로 바뀐다거나 등 그래서 처음에 리듀서에 대해 미리 합의를 봐서 커뮤니케이션이 중요하다.
 
-const reducer = (state = initialState, action) => {
-  switch (action.type) {
-    case ADD_POST_REQUEST:
-      return {
-        ...state,
-        addPostLoading: true,
-        addPostDone: false,
-        addPostError: null,
-      };
-    case ADD_POST_SUCCESS:
-      return {
-        ...state,
-        mainPosts: [dummyPost(action.data), ...state.mainPosts], // dummyPost를 앞에다 넣어야 게시글 쓰자마자 위에서부터 추가된다.
-        addPostLoading: false,
-        addPostDone: true,
-      };
-    case ADD_POST_FAILURE:
-      return {
-        addPostLoading: false,
-        addPostError: action.error,
-      };
-    case REMOVE_POST_REQUEST:
-      return {
-        ...state,
-        removePostLoading: true,
-        removePostDone: false,
-        removePostError: null,
-      };
-    case REMOVE_POST_SUCCESS:
-      return {
-        ...state,
-        mainPosts: state.mainPosts.filter((v) => v.id !== action.data),
-        removePostLoading: false,
-        removePostDone: true,
-      };
-    case REMOVE_POST_FAILURE:
-      return {
-        removePostLoading: false,
-        removePostError: action.error,
-      };
-    case ADD_COMMENT_REQUEST:
-      return {
-        ...state,
-        addCommentLoading: true,
-        addCommentDone: false,
-        addCommentError: null,
-      };
-    case ADD_COMMENT_SUCCESS: {
-      const postIndex = state.mainPosts.findIndex(
-        (v) => v.id === action.data.postId
-      );
-      const post = { ...state.mainPosts[postIndex] };
-      post.Comments = [dummyComment(action.data.content), ...post.Comments];
-      const mainPosts = [...state.mainPosts];
-      mainPosts[postIndex] = post;
-      return {
-        ...state,
-        mainPosts,
-        // mainComments: [dummyPost, ...state.mainComments], // dummyComment를 앞에다 넣어야 게시글 쓰자마자 위에서부터 추가된다.
-        addCommentLoading: false,
-        addCommentDone: true,
-      };
+// 이전 상태를 액션을 통해 다음 상태로 만들어내는 함수 (불변성 지키면서)
+// immer는 불변성 신경안써도 된다.
+// state 이름이 draft로 바뀐다. draft는 불변성 상관 없이 막 변경해도 된다. 그럼 immer가 알아서
+// 불변성 지키면서 다음 상태로 만들어 준다.
+const reducer = (state = initialState, action) =>
+  produce(state, (draft) => {
+    switch (action.type) {
+      case LOAD_POSTS_REQUEST:
+        draft.loadPostsLoading = true;
+        draft.loadPostsDone = false;
+        draft.loadPostsError = null;
+        break;
+      case LOAD_POSTS_SUCCESS:
+        draft.loadPostsLoading = false;
+        draft.loadPostsDone = true;
+        draft.mainPosts = action.data.concat(draft.mainPosts); // generateDummyPost(10)이면 기존 10개 + 더미데이터 10 = 20개 된다. 즉 10개씩 불러온다.
+        draft.hasMorePost = draft.mainPosts.length < 50;
+        break;
+      case LOAD_POSTS_FAILURE:
+        draft.loadPostsLoading = false;
+        draft.loadPostsError = action.error;
+        break;
+      case ADD_POST_REQUEST:
+        draft.addPostLoading = true;
+        draft.addPostDone = false;
+        draft.addPostError = null;
+        break;
+      case ADD_POST_SUCCESS:
+        draft.addPostLoading = false;
+        draft.addPostDone = true;
+        draft.mainPosts.unshift(dummyPost(action.data));
+        break;
+      case ADD_POST_FAILURE:
+        draft.addPostLoading = false;
+        draft.addPostError = action.error;
+        break;
+      case REMOVE_POST_REQUEST:
+        draft.removePostLoading = true;
+        draft.removePostDone = false;
+        draft.removePostError = null;
+        break;
+      case REMOVE_POST_SUCCESS:
+        draft.removePostLoading = false;
+        draft.removePostDone = true;
+        draft.mainPosts = draft.mainPosts.filter((v) => v.id !== action.data);
+        break;
+      case REMOVE_POST_FAILURE:
+        draft.removePostLoading = false;
+        draft.removePostError = action.error;
+        break;
+      case ADD_COMMENT_REQUEST:
+        draft.addCommentLoading = true;
+        draft.addCommentDone = false;
+        draft.addCommentError = null;
+        break;
+      case ADD_COMMENT_SUCCESS: {
+        const post = draft.mainPosts.find((v) => v.id === action.data.postId);
+        post.Comments.unshift(dummyComment(action.data.content));
+        draft.addCommentLoading = false;
+        draft.addCommentDone = true;
+        break;
+        // const postIndex = state.mainPosts.findIndex((v) => v.id === action.data.postId);
+        // const post = { ...state.mainPosts[postIndex] };
+        // post.Comments = [dummyComment(action.data.content), ...post.Comments];
+        // const mainPosts = [...state.mainPosts];
+        // mainPosts[postIndex] = post;
+        // return {
+        //   ...state,
+        //   mainPosts,
+        //   addCommentLoading: false,
+        //   addCommentDone: true,
+        // };
+      }
+      case ADD_COMMENT_FAILURE:
+        draft.addCommentLoading = false;
+        draft.addCommentError = action.error;
+        break;
+      default:
+        break;
     }
-    case ADD_COMMENT_FAILURE:
-      return {
-        addCommentLoading: false,
-        addCommentError: action.error,
-      };
-    default:
-      return state;
-  }
-};
+  });
 
 export default reducer;
