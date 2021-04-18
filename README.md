@@ -229,3 +229,48 @@ action 기록들이 전부 남아있기 때문에 action 하나 실행 할때마
 (react-virtualized)[https://github.com/bvaughn/react-virtualized]
 
 - 수 많은 데이터가 로딩 되어있는데, 화면에는 3개만 그려주고 나머지는 메모리에 저장된다.
+
+## 노드로 서버 구동
+
+백엔드 서버와 프론트 서버 나누는 이유
+
+- 대규모 app 대비
+- 프론트는 SSR 백엔드는 API 한 컴퓨터에 두 개를 띄어도 되지만
+- 만약에 프론트 서버에 요청이 1초에 1000개 가 오고 백엔드는 10개로 비대칭적으로 올 때가 있다.
+- 그러면 서버가 메모리나 CPU가 부족해서 터진다.
+- 대비해서 스케일링을 해준다. (컴퓨터를 복사한다 기존거를 통째로)
+- 그러면 프론트 1000 만큼을 나눠 받도록 하지만 여기서 백엔드는 불필요한 낭비가 된다.
+- 이러한 문제로 대규모 프로젝트 같은 경우 각 기능별로 서버로 나누어주는 경우가 많다.
+- 그래야지 그 특정 기능에 데이터 요청이 많이 왔을 때 그 기능만 서버 여러대로 늘려주면 되기 떄문에
+- 한 컴퓨터에다가 모든 기능을 다 넣어두면 그 서버를 스케일링할 때 모든 기능이 복사되는데 그럼 나머지 것들은 쓸모없게 되버리기 때문이다.
+
+```
+const http = require('http'); // node 에서 기본적으로 http 모듈 제공
+
+const server = http.createServer((req, res) => {
+  console.log(req.url, req.method);
+
+  if (req.method === 'GET') {
+    if (req.url === '/api/posts') {
+    }
+  } else if (req.method === 'POST') {
+  } else if (req.method === 'DELETE') {
+  }
+
+  res.write('<h1>Hollo node1</h1>');
+  res.write('Hollo node2');
+  res.write('Hollo node3');
+  res.write('Hollo node4');
+  res.end('Hello node8');
+});
+
+server.listen(3065, () => {
+  console.log('서버 실행 중');
+});
+```
+
+- node 런타임이 코드를 실행해서 http가 서버 역할을 하는거지 node 자체가 서버는 아니다.
+- res.write 여러 줄로 이용하여 HTML로 보낼 수 있다. 하지만 비효율적이다.
+- 서버쪽 라우터들도 쪼갤 필요가 있다.
+- 기본 node 제공하는 http로는 코드를 깔끔하게 구현하기 힘들어서 express 프레임워크를 사용한다.
+- 기본적인 원리는 createServer에서 요청 method나 url에 따라서 응답을 해준다.
