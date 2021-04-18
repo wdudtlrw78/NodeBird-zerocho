@@ -19,12 +19,12 @@ const Home = () => {
   useEffect(() => {
     // 스크롤 위치 판단
     function onScroll() {
-      console.log(
-        window.scrollY, // 얼마나 내렸는지
-        document.documentElement.clientHeight, // 화면에 보이는 길이
-        document.documentElement.scrollHeight, // 총 길이
-        // scrollHeight = scrollY + clientHeight
-      );
+      // console.log(
+      //   window.scrollY, // 얼마나 내렸는지
+      //   document.documentElement.clientHeight, // 화면에 보이는 길이
+      //   document.documentElement.scrollHeight, // 총 길이
+      //   // scrollHeight = scrollY + clientHeight
+      // );
 
       // react-virtualized = ex) 많은 데이터를 화면에 데이터 3개까지만 보여지고 나머진 메모리에 저장된다.
 
