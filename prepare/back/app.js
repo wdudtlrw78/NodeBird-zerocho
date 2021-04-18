@@ -19,7 +19,7 @@ app.get('/posts', (req, res) => {
   ]);
 });
 
-app.use(postRouter);
+app.use('/post', postRouter); // /post prefix로 붙인다.
 
 app.listen(3065, () => {
   console.log('서버 실행 중');
