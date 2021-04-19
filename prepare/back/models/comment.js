@@ -1,26 +1,27 @@
 // 사용자가 남긴 댓글
 
-// mysql에서는 테이블
-// sequlize에서 테이블들을 model이라고 부른다.
-
 module.exports = (sequlize, DataTypes) => {
   // 사용자 정보 저장
   const Comment = sequlize.define(
     'Comment',
-    // 자동으로 소문자로되고 복수가 된다. MySQL에 Comments 테이블 생성
     {
-      // id: {}, -> id는 안적어도 된다. mySQL에서 자동으로 1, 2, 3, 4올라간다.
       content: {
         type: DataTypes.TEXT,
         allowNull: false,
       },
     },
+    // UserId : 1
+    // PostId : 3
     {
       charset: 'utf8mb4',
       collate: 'utf8mb4_general_ci', // + mb4 = 이모티콘 저장
     }
   );
 
-  Comment.associate = (db) => {};
+  // associate : 관계형 데이터 베이스
+  Comment.associate = (db) => {
+    db.Comment.belongsTo(db.User); // 작성자한테 속해있다.
+    db.Comment.belongsTo(db.Post); // 게시글에 속해있다.
+  };
   return Comment;
 };
