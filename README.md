@@ -226,9 +226,10 @@ action 기록들이 전부 남아있기 때문에 action 하나 실행 할때마
 
 ## react-virtualized를 활용한 무한 스크롤
 
-(react-virtualized)[https://github.com/bvaughn/react-virtualized]
+[react-virtualized](https://github.com/bvaughn/react-virtualized)
 
 - 수 많은 데이터가 로딩 되어있는데, 화면에는 3개만 그려주고 나머지는 메모리에 저장된다.
+- 성능문제 호환
 
 <br>
 
@@ -276,3 +277,11 @@ server.listen(3065, () => {
 - 서버쪽 라우터들도 쪼갤 필요가 있다.
 - 기본 node 제공하는 http로는 코드를 깔끔하게 구현하기 힘들어서 express 프레임워크를 사용한다.
 - 기본적인 원리는 createServer에서 요청 method나 url에 따라서 응답을 해준다.
+
+## MySQL과 시퀄라이즈 연결하기
+
+- `npm i sequelize sequelize-cli mysql2`
+- `mysql2` : node와 mysql을 연결해주는 드라이버 역할이다.
+- `sequelize` : sql 언어가 버거울때 자바스크립트로 조작해주는 라이브러리 (자바스크립트가 자동으로 sql언어로 변경해준다.)
+
+- `npx sequelize init` 명령 : sequelize 셋팅완료
