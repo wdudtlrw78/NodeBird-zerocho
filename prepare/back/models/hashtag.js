@@ -18,7 +18,7 @@ module.exports = (sequlize, DataTypes) => {
 
   // associate : 관계형 데이터 베이스
   Hashtag.associate = (db) => {
-    db.Hashtag.belongsToMany(db.Post); // 작성자한테 속해있다.
+    db.Hashtag.belongsToMany(db.Post, { through: 'PostHashtag' }); // 작성자한테 속해있다.
   };
   return Hashtag;
 };

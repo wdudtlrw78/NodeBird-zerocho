@@ -14,7 +14,15 @@ const sequelize = new Sequelize(
   config
 );
 
+// db 객체안에 각각의 모델들을 집어넣어주고 실행한다.
+db.Comment = require('./comment')(sequelize, Sequelize);
+db.Hashtag = require('./hashtag')(sequelize, Sequelize);
+db.Image = require('./image')(sequelize, Sequelize);
+db.Post = require('./post')(sequelize, Sequelize);
+db.User = require('./user')(sequelize, Sequelize);
+
 Object.keys(db).forEach((modelName) => {
+  // 반복문 돌면서 각각의 데이터 관계(associate) 실행해준다.
   if (db[modelName].associate) {
     db[modelName].associate(db);
   }
@@ -24,3 +32,4 @@ db.sequelize = sequelize;
 db.Sequelize = Sequelize;
 
 module.exports = db;
+// 여기까지 시퀄라이즈 모델들 다 등록완료 끝이 아니고 express에서 시퀄라이즈 등록해줘야한다. (app.js)

@@ -18,7 +18,7 @@ module.exports = (sequlize, DataTypes) => {
 
   Post.associate = (db) => {
     db.Post.belongsTo(db.User); // 작성자한테 속해있다.
-    db.Post.belongsToMany(db.Hashtag); // 다 대 다 관계 왜냐하면 게시글 안에 해시태그가 들어있다
+    db.Post.belongsToMany(db.Hashtag, { through: 'PostHashtag' }); // 다 대 다 관계 왜냐하면 게시글 안에 해시태그가 들어있다
     // 그럼 1 대 다 관계일까?? 항상 반대도 생각해봐야한다. 해시태그 안에 게시글 여러개 들어갈 수 있을까?? 해시태그는 들어있다.
 
     db.Post.hasMany(db.Comment); // 게시글이 댓글을 여러개 기질 수 있다.
