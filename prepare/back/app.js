@@ -3,6 +3,7 @@ const cors = require('cors');
 const postRouter = require('./routes/post');
 const userRouter = require('./routes/user');
 const db = require('./models');
+const passportConfig = require('./passport');
 
 const app = express();
 
@@ -14,6 +15,7 @@ db.sequelize
   .catch(console.error);
 // 터미널 -> node app -> Error: Unknown database 'react-nodebird' -> npx sequelize db:create
 // -> node app (시퀄라이즈가 만들어놨떤 js 작성보고서 sql문으로 변경해서 실행) -> mySQL db테이블 생성
+passportConfig();
 
 app.use(
   cors({
@@ -45,7 +47,7 @@ app.get('/posts', (req, res) => {
 });
 
 app.use('/post', postRouter); // /post prefix로 붙인다.
-app.use('/user', userRouter); // /user prefix로 붙인다.
+app.use('/user', userRouter); // 회원가입 /user prefix로 붙인다.
 
 app.listen(3065, () => {
   console.log('서버 실행 중!');

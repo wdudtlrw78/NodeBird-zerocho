@@ -1,10 +1,44 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
+const passport = require('passport');
 const { User } = require('../models'); // db.User 구조분해 { User }
 
 const router = express.Router();
 
-// POST /user/
+//로그인 POST / user /login
+// passport 전략 실행
+// passport는 사용방법이 다르다 원래는 req, res, next가 없는 미들웨어인데 미들웨어를 확장한다(express 기법중 하나).
+router.post('/login', (req, res, next) => {
+  passport.authenticate('local', (err, user, info) => {
+    // 서버에러 발생하면
+    if (err) {
+      console.error(err);
+      return next(err);
+    }
+
+    // 클라이언트 에러발생하면
+    if (info) {
+      return res.status(401).send(info.reason); // 403은 금지 401은 허가되지 않음
+    }
+
+    // 성공하면
+    // req.login으로 login할 수 있다.
+    // passport에서 로그인할 수 있게 허락해 주는데
+    // 혹시나 로그인 하는 과정에서 에러 발생하면
+    // 이거는 우리 서비스 로그인하는게아니라 passport 로그인이다.
+    // 우리 서비스 로그인할 때 전부 통과하면 passport 로그인을 한 번더한다.
+    return req.login(user, async (loginErr) => {
+      if (loginErr) {
+        console.error(loginErr);
+        return next(loginErr);
+      }
+      // 사용자 정보를 프론트로 넘겨준다.
+      return res.json(user);
+    });
+  })(req, res, next);
+});
+
+//회원가입 POST /user/
 router.post('/', async (req, res, next) => {
   try {
     // 중복체크

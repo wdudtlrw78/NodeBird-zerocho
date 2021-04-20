@@ -19,17 +19,17 @@ import {
 } from '../reducers/user';
 
 function logInAPI(data) {
-  return axios.post('/api/login', data);
+  return axios.post('/user/login', data); // 앞에 localhost:3065 = index.js에서 baseUrl 설정
 }
 
 function* logIn(action) {
   try {
-    // const result = yield call(logInAPI, action.data); // 서버가 아직 없기 때문에 call 하면 에러가 발생한다. 없는 서버에 요청해서 그래서 가짜로 만든다.
+    const result = yield call(logInAPI, action.data); // 서버가 아직 없기 때문에 call 하면 에러가 발생한다. 없는 서버에 요청해서 그래서 가짜로 만든다.
     console.log('saga Login');
-    yield delay(1000); // delay: setTimeout 역할 // 서버 구현되기 전까지 dealy로 비동기적인 효과를 준다.
+    // yield delay(1000); // delay: setTimeout 역할 // 서버 구현되기 전까지 dealy로 비동기적인 효과를 준다.
     yield put({
       type: LOG_IN_SUCCESS,
-      data: action.data,
+      data: result.data,
     });
   } catch (err) {
     console.log(err);
@@ -41,7 +41,7 @@ function* logIn(action) {
 }
 
 function logOutAPI(data) {
-  return axios.post('/api/logout', data);
+  return axios.post('/logout', data);
 }
 
 function* logOut() {
@@ -64,7 +64,7 @@ function* logOut() {
 // 참고 : get이랑 delete는 data를 못넘긴다.
 // post, put, patch는 data를 넘길 수 있다. 두번 쨰로
 function signUpAPI(data) {
-  return axios.post('http://localhost:3065/user', data); // 브라우저(3060)에서  백엔드 서버(3065) 바로 보내기
+  return axios.post('/user', data); // 브라우저(3060)에서  백엔드 서버(3065) 바로 보내기
 }
 
 function* signUp(action) {
@@ -86,7 +86,7 @@ function* signUp(action) {
 }
 
 function followAPI() {
-  return axios.post('/api/follow');
+  return axios.post('/follow');
 }
 
 function* follow(action) {
@@ -108,7 +108,7 @@ function* follow(action) {
 }
 
 function unfollowAPI(action) {
-  return axios.post('/api/unfollow');
+  return axios.post('/unfollow');
 }
 
 function* unfollow(action) {
