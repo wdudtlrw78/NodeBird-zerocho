@@ -19,6 +19,7 @@ router.post('/', async (req, res, next) => {
     // 400번대 클라이언트 에러
     // 500번대 서버 에러
     if (exUser) {
+      // sagas/user.js -> signUp error와 연결
       return res.status(403).send('이미 사용중인 아이디입니다.'); // return 안하면 아래꺼까지 실행된다.
       // 안붙이면 res.send 아래에도 res.send 응답을 두 번 보내져서 에러가 난다. 응답은 무조건 한번만 보내야된다. (요청이 한 번이니까 응답도 한 번)
       // 만약 응답 두 번 보내져서 에러 메시지는 can't set headers already sent
@@ -33,7 +34,7 @@ router.post('/', async (req, res, next) => {
       nickname: req.body.nickname,
       password: hashedPassword, // 비밀번호를 그대로 적어주면 보안의 위협이된다. // 비밀번호 암호화 라이브러리 설치 npm i bcrypt
     });
-    res.status(200).send('ok'); // 201 : 잘 생성됨
+    res.status(201).send('ok'); // 201 : 잘 생성됨
   } catch (error) {
     console.error(error);
     next(error); // status 500 / next 통해서 error을 보내면 그 에러들이 한 방에 처리된다. 에러가 발생하면 express가 브라우저(클라이언트)로 "너 이런에러가 발생했다고 알려준다"

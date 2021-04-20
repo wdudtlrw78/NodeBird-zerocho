@@ -285,3 +285,37 @@ server.listen(3065, () => {
 - `sequelize` : sql 언어가 버거울때 자바스크립트로 조작해주는 라이브러리 (자바스크립트가 자동으로 sql언어로 변경해준다.)
 
 - `npx sequelize init` 명령 : sequelize 셋팅완료
+
+## CORS
+
+원인
+
+- (Access-Control-Allow-Origin) header가 requested resource에 없다.
+  - 정상적으론 Network탭 해당 Headers에 Access-Control-Allow-Origin가 있어야 되는데 없어서 에러 발생
+- 브라우저 (3060)가 다른 도메인으로 백엔드 서버(express)(3065) 요청을 보내면 <b>브라우저가 차단</b>해버린다 (CORS)
+  - 브라우저에서 다른 서버 요청을 보냈을 때 발생하는 문제
+  - 프론트 서버에서 즉 서버에서 서버로 요청했을때는 CORS가 안생긴다.
+  - 브라우저에서 다른 도메인 서버로 보냈을때만 CORS가 생긴다.
+- 3060 에서 3065로 보낼 수 있도록 허용을 해야한다.
+
+해결1
+
+- 브라우저(3060)에서 프론트 서버(Next)(3060)로 요청을 보낸다.
+- 프록시(Proxy) 방식 : 프론트 서버에서 백엔드 서버로 요청 보내고 백엔드 서버에서 프론트 서버 응답했다가 다시 프론트 서버에서 브라우저로 응답 방식 (webpack devserver)
+
+해결2
+
+브라우저에서 백엔드 서버로 직접적으로 피해가는 방식 (Access-Control-Allow-Origin) header 설정
+
+- npm i cors 미들웨어에서 처리해준다.
+- cors는 보안정책이기 때문에 즉 브라우저는 사용자들이 사용하기 때문에 해커들도 있을 수 있다. 해커들이 백엔드 직접 요청날리면 위험해서 브라우저 자체가 차단하는데
+  cors로 다 허용해버리면 위험할 수 있어서 origin: 'http:// 진짜 주소' 만 허용하겠다라고 설정해준다. (실무)
+
+```
+app.use(
+  cors({
+    // 여기선 true로 설정 localhost 개발서버에서도 요청을 허락받아야 되니깐
+    origin: true, // * 대신 true설정하면 보낸 곳의 주소가 자동으로 들어가 편리
+  })
+);
+```
