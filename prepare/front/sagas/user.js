@@ -1,4 +1,4 @@
-import { all, delay, fork, put, takeLatest } from 'redux-saga/effects';
+import { all, delay, fork, put, takeLatest, call } from 'redux-saga/effects';
 import axios from 'axios';
 import {
   FOLLOW_FAILURE,
@@ -61,14 +61,17 @@ function* logOut() {
   }
 }
 
+// 참고 : get이랑 delete는 data를 못넘긴다.
+// post, put, patch는 data를 넘길 수 있다. 두번 쨰로
 function signUpAPI(data) {
-  return axios.post('/api/signup', data);
+  return axios.post('http://localhost:3065/user', data); // 브라우저(3060)에서  백엔드 서버(3065) 바로 보내기
 }
 
-function* signUp() {
+function* signUp(action) {
   try {
-    // const result = yield call(signUpAPI);
-    yield delay(1000);
+    const result = yield call(signUpAPI, action.data);
+    console.log(result);
+    // yield delay(1000);
 
     yield put({
       type: SIGN_UP_SUCCESS,
