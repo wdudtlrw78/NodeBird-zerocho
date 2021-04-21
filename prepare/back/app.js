@@ -83,6 +83,11 @@ app.get('/posts', (req, res) => {
 app.use('/post', postRouter); // /post prefix로 붙인다.
 app.use('/user', userRouter); // 회원가입 /user prefix로 붙인다.
 
+// app.use((err, req, res, next) => {
+// 에러 처리 미들웨어 : 내부적으로 들어있지만 커스텀으로 쓸 때는 에러 페이지를 따로 표시하고싶다던가 어떤 정보는 빼고 하고싶다던가 등 사용
+// next(err) 정보 자체가 모두 에러 처리 미들웨어로 넘어가고 전부다 프론트서버로 넘어가기 때문에 그 기본 역할을 바꾸고싶으면 커스텀한다.
+// })
+
 app.listen(3065, () => {
   console.log('서버 실행 중!');
 });

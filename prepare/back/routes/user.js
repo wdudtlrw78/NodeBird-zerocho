@@ -2,13 +2,14 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const passport = require('passport');
 const { User, Post } = require('../models'); // db.User 구조분해 { User }
+const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
 
 const router = express.Router();
 
 //로그인 POST / user /login
 // passport 전략 실행
 // passport는 사용방법이 다르다 원래는 req, res, next가 없는 미들웨어인데 미들웨어를 확장한다(express 기법중 하나).
-router.post('/login', (req, res, next) => {
+router.post('/login', isNotLoggedIn, (req, res, next) => {
   passport.authenticate('local', (err, user, info) => {
     // 서버에러 발생하면
     if (err) {
@@ -74,7 +75,7 @@ router.post('/login', (req, res, next) => {
 });
 
 //회원가입 POST /user/
-router.post('/', async (req, res, next) => {
+router.post('/', isNotLoggedIn, async (req, res, next) => {
   try {
     // 중복체크
     const exUser = await User.findOne({
@@ -112,7 +113,14 @@ router.post('/', async (req, res, next) => {
   }
 });
 
-router.post('/user/logout', (req, res) => {
+// 만약 로그인이 안한사람이 로그아웃 접근할 수 도 있다.
+// 주소는 공개되어있기 때문에 주수들과 post인지 get인지 알면 그리고 설사 모른다고 해도 계속 바꿔서 시도할 수 도있기 때문에 맞출 수 도 있다.
+// 로그인 한 사람인지 안한사람인지 보안을 위해 검사를 해줘야한다.
+// middlewares.js
+// 코드 실행은 위에서 아래로 왼쪽에서 오른쪽으로 실행된다.
+// isLoggedIn으로 검사한다 -> middlewares.js -> next() 실행해서 다음 미들웨어로 이동 ex) 위에 /login , isNotLoggedIn의 passport.authenticate() 실행 ->
+// 실행중에 next(err) 에러가나면 바로 err처리 미들웨어로 간다. app.js 의 맨아래 app.listen() 과 app.use('/user', userRouter); 등 사이에 내부적으로 에러처리 미들웨어가 존재한다.
+router.post('/logout', isLoggedIn, (req, res) => {
   req.logout();
   req.session.destroy();
   res.status(200).send('ok');

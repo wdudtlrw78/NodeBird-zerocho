@@ -40,8 +40,8 @@ function* logIn(action) {
   }
 }
 
-function logOutAPI(data) {
-  return axios.post('/logout', data);
+function logOutAPI() {
+  return axios.post('/user/logout');
 }
 
 function* logOut() {
