@@ -1,4 +1,4 @@
-// 로컬 로그인 전략 (Local Login Strategy);
+// 로컬 로그인 전략 (Local Login );
 
 // passport에서는 응답을 보내지 않는다.
 

@@ -28,6 +28,8 @@
   - 백엔드 개발자가 API 만들어주기까지 대기하는 것 보다 Dummy Data와 함께 프론트 화면 만들기
   - 가상의 State 만들기 (실무에서는 Redux나 MobX 상태관리)
 
+- 백엔드 서버없이 next의 router api 대체할 수 있지만 실무에서는 아주 소규모 api 일때에만 쓰인다. ( 대규모는 스케일링 문제때문에 백엔드 서버를 따로 둔다. )
+
   <br>
 
 ## SSR, CSR and Next.JS
@@ -319,3 +321,13 @@ app.use(
   })
 );
 ```
+
+## passport
+
+SNS 로그인 전략
+
+- [passport-kakao](http://www.passportjs.org/packages/passport-kakao/) passport-kakao 등
+  - 각 각의 해당 로그인용 앱을 만들어줘야 한다. https://developers.kakao.com/
+  - 로그인용 앱 만든후 passport-kakao 내용에 따라 적용한다.
+- node쪽은 전부 passport로 통일 되어있다.
+  - 로그인 자체는 passport일 필요는 없지만 passport 자체만 백엔드가 node여야한다.

@@ -14,7 +14,7 @@ const ErrorMessage = styled.div`
 
 const Signup = () => {
   const dispatch = useDispatch();
-  const { signUpLoading, signUpDone, signUpError } = useSelector((state) => state.user);
+  const { signUpLoading, signUpDone, signUpError, me } = useSelector((state) => state.user);
 
   const [email, onChangeEmail] = useInput('');
   const [nickname, onChangeNickname] = useInput('');
@@ -23,8 +23,15 @@ const Signup = () => {
   const [passwordError, setPasswordError] = useState(false);
 
   useEffect(() => {
+    if (me && me.id) {
+      Router.replace('/'); // push는 뒤로가기 하면 이전 페이지로 돌아가는데 replace는 그 페이지가 기록에서 사라져 버린다.
+      // 즉 뒤로가기 눌렀을 때 회원가입 페이지가 나오지 않게 하려면 replace
+    }
+  }, [me && me.id]);
+
+  useEffect(() => {
     if (signUpDone) {
-      Router.push('/');
+      Router.replace('/');
     }
   }, [signUpDone]);
 

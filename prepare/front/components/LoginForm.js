@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import Link from 'next/link';
 import { Form, Input, Button } from 'antd';
 import styled from 'styled-components';
@@ -17,9 +17,15 @@ const FormWrapper = styled(Form)`
 
 const LoginForm = () => {
   const dispatch = useDispatch();
-  const { logInLoading } = useSelector((state) => state.user);
+  const { logInLoading, logInError } = useSelector((state) => state.user);
   const [email, onChangeEmail] = useInput('');
   const [password, onChangePassword] = useInput('');
+
+  useEffect(() => {
+    if (logInError) {
+      alert(logInError);
+    }
+  }, [logInError]);
 
   const onSubmitForm = useCallback(() => {
     // antd 에서는 자동 e.preventDefault가 적용되어있다.
@@ -34,24 +40,12 @@ const LoginForm = () => {
       <div>
         <label htmlFor="user-email">이메일</label>
         <br />
-        <Input
-          name="user-email"
-          type="email"
-          value={email}
-          onChange={onChangeEmail}
-          required
-        />
+        <Input name="user-email" type="email" value={email} onChange={onChangeEmail} required />
       </div>
       <div>
         <label htmlFor="user-password">비밀번호</label>
         <br />
-        <Input
-          name="user-password"
-          type="password"
-          value={password}
-          onChange={onChangePassword}
-          required
-        />
+        <Input name="user-password" type="password" value={password} onChange={onChangePassword} required />
       </div>
       <ButtonWrapper>
         <Button type="primary" htmlType="submit" loading={logInLoading}>
