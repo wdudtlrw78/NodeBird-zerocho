@@ -26,7 +26,8 @@ passportConfig();
 
 app.use(
   cors({
-    origin: true, // * 대신 true설정하면 보낸 곳의 주소가 자동으로 들어가 편리
+    origin: 'http://localhost:3060', // * 대신 true설정하면 보낸 곳의 주소가 자동으로 들어가 편리
+    credentials: true, // 쿠키도 같이 전달
   })
 );
 // app = express인데 express 서버에다가 뭔가를 장착(use)을 해준다. (use 안에 들어가는 것들이 미들웨어이다. 순서도 매우 중요하다.)

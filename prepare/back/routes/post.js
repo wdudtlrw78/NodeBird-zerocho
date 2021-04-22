@@ -2,19 +2,33 @@ const express = require('express');
 
 // 게시글 작성, 댓글 작성하는 것도 로그인 여부 파악해야한다.
 const { isLoggedIn } = require('./middlewares');
-const { Post } = require('../models');
+const { Post, User, Image, Comment } = require('../models');
 
 const router = express.Router();
 
 router.post('/', isLoggedIn, async (req, res, next) => {
   // POST /post
   try {
-    await Post.create({
+    const post = await Post.create({
       content: req.body.content,
       UserId: req.user.id,
     });
+    const fullPost = await Post.findOne({
+      where: { id: post.id },
+      include: [
+        {
+          model: Image,
+        },
+        {
+          model: Comment,
+        },
+        {
+          model: User,
+        },
+      ],
+    });
     // 프론트로 돌려주기 -> saga -> addPost result
-    res.status(201).json(post);
+    res.status(201).json(fullPost);
   } catch (error) {
     console.error(error);
     next(error);

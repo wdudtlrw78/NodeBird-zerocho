@@ -331,3 +331,40 @@ SNS 로그인 전략
   - 로그인용 앱 만든후 passport-kakao 내용에 따라 적용한다.
 - node쪽은 전부 passport로 통일 되어있다.
   - 로그인 자체는 passport일 필요는 없지만 passport 자체만 백엔드가 node여야한다.
+
+## credentials로 쿠키 공유
+
+- CORS처럼 서버간의 도메인이 다르면 쿠키도 전달이 안된다.
+- 쿠키가 전달되어야 백엔드 서버가 요청한 사람이 누군지 아는데 내가 로그인 했더하더라도 그 다음 요청이 백엔드 서버는 누가 보내는지 모른다.
+
+해결 방법
+
+1. 프록시(Proxy) 방식
+2. CORS Module
+
+CORS Module 방식
+
+- 위 CORS문제에서 브라우저(3060)에서 백엔드 서버(3065) 전달 하고싶으면 CORS가 Access-Control-Allow-Origin을 허용을 해주었다 HEADR로
+
+- credentials: true 해주어야 쿠키가 전달이 되고, Access-Control-Allow-Origin이 true가 된다.
+- 기본 값은 false이며 쿠키를 전달하고싶으면 true로 변경
+- ex) 댓글 적을 때, 등록, 제거 등 axiost 에서 withCredentials: true 넣어줘야한다.
+  - 항상 요청을 보낸사람이 누군지 알려주려면 쿠키를 보내준다.
+  - 프론트에서는 axios withCredentials: true
+  - 백엔드에서는 cors에서 credentials: true
+
+```
+sagas/index.js
+// saga의 axios 요청들은 공통적으로 들어간다.
+axios.defaults.baseURL = 'http://localhost:3065';
+axios.defaults.withCredentials = true;
+```
+
+```
+app.use(
+  cors({
+    origin: true,
+    credentials: true
+  })
+);
+```

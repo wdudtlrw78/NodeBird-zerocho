@@ -44,9 +44,9 @@ function addPostAPI(data) {
   return axios.post('/post', { content: data });
 }
 
-function* addPost() {
+function* addPost(action) {
   try {
-    const result = yield call(addPostAPI);
+    const result = yield call(addPostAPI, action.data);
     // yield delay(1000);
 
     const id = shortId.generate();
