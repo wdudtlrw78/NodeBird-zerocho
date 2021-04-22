@@ -10,6 +10,8 @@ module.exports = () => {
   });
 
   passport.deserializeUser(async (id, done) => {
+    // serializeUser 로 ID만 들고있다가 라우터로 접근하게 되면 라우터 접근전에 deserializeUser 한번씩 실행해서
+    // 저장했던 ID 토대로 사용자 정보를 복구해서 req.user로 만든다. 그래서 routers에서 req.user로 접근이 가능하다.
     // 로그인 성공하고나서 그 다음 요청부터 실행
     // 모모로 로그인하면 id : 1 랑 set-Cookie connect-sid 와 함께 다음요청에 보내지는데
     // 그럼 이부분이 다음 요청부터 매번 실행되서 아이디로부터 사용자 정보를 복구를 해낸다.

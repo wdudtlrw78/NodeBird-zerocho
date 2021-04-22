@@ -93,27 +93,27 @@ export const addComment = (data) => ({
   data,
 });
 
-const dummyPost = (data) => ({
-  // 더미 데이터
-  id: data.id,
-  content: data.content,
-  User: {
-    id: 1,
-    nickname: '모모',
-  },
-  Images: [],
-  Comments: [],
-});
+// const dummyPost = (data) => ({
+//   // 더미 데이터
+//   id: data.id,
+//   content: data.content,
+//   User: {
+//     id: 1,
+//     nickname: '모모',
+//   },
+//   Images: [],
+//   Comments: [],
+// });
 
-const dummyComment = (data) => ({
-  // 더미 데이터
-  id: shortId.generate(),
-  content: data,
-  User: {
-    id: 1,
-    nickname: '모모',
-  },
-});
+// const dummyComment = (data) => ({
+//   // 더미 데이터
+//   id: shortId.generate(),
+//   content: data,
+//   User: {
+//     id: 1,
+//     nickname: '모모',
+//   },
+// });
 
 // 이런식으로 미리 리듀서부터 만들어 준다. 화면은 중요하지 않고 데이터를 미리 구성하고 액션 구성해서 리듀서 작성한다.
 // 화면은 작성한 데이터 기준으로 작성한다.
@@ -150,7 +150,7 @@ const reducer = (state = initialState, action) =>
       case ADD_POST_SUCCESS:
         draft.addPostLoading = false;
         draft.addPostDone = true;
-        draft.mainPosts.unshift(dummyPost(action.data));
+        draft.mainPosts.unshift(action.data);
         break;
       case ADD_POST_FAILURE:
         draft.addPostLoading = false;
@@ -176,8 +176,8 @@ const reducer = (state = initialState, action) =>
         draft.addCommentError = null;
         break;
       case ADD_COMMENT_SUCCESS: {
-        const post = draft.mainPosts.find((v) => v.id === action.data.postId);
-        post.Comments.unshift(dummyComment(action.data.content));
+        const post = draft.mainPosts.find((v) => v.id === action.data.PostId);
+        post.Comments.unshift(action.data);
         draft.addCommentLoading = false;
         draft.addCommentDone = true;
         break;
