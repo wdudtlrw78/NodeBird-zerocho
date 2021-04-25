@@ -6,6 +6,52 @@ const { isLoggedIn, isNotLoggedIn } = require('./middlewares');
 
 const router = express.Router();
 
+// 사용자 불러오기 (새로고침 로그인 풀림 해결)
+// 새로고침 할 때마다 요청
+router.get('/', async (req, res, next) => {
+  // GET /user
+  try {
+    // 로그인하지 않은 상태에서 요청하면 { id: req.user.id } 에러 발생 요청 막아주기
+    if (req.user) {
+      // 유저가 있을때만
+      const fullUserWithoutPassword = await User.findOne({
+        where: { id: req.user.id },
+        attributes: {
+          // attributes: [], // 원하는 정보만 받기
+          exclude: ['password'], // 전체 데이터중에 password만 빼고 가져오겠다.
+        },
+        include: [
+          {
+            // hasMany라서 복수형 me.Posts
+            model: Post,
+
+            // me data
+            // 숫자 갯수만 알아내면 되기 때문에 id만 가져오면 length 길이로 몇 개, 몇 명인지 알 수 있고 나머지 불필요한 데이터들은 안받을 수 있다.
+            // 만약 팔로워 팔로잉이 수백만명이고 데이터에 전부 가득 차있으면 용량차고 모바일 시 느려지는 현상 방지
+            attributes: ['id'],
+          },
+          {
+            model: User,
+            as: 'Followings',
+            attributes: ['id'],
+          },
+          {
+            model: User,
+            as: 'Followers',
+            attributes: ['id'],
+          },
+        ],
+      });
+      res.status(200).json(fullUserWithoutPassword);
+    } else {
+      res.status(200).json(null);
+    }
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
 //로그인 POST / user /login
 // passport 전략 실행
 // passport는 사용방법이 다르다 원래는 req, res, next가 없는 미들웨어인데 미들웨어를 확장한다(express 기법중 하나).
