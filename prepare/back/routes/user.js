@@ -186,7 +186,82 @@ router.patch('/nickname', isLoggedIn, async (req, res, next) => {
         where: { id: req.user.id }, // 내 아이디
       }
     );
-    res.status(200).json({ nickname: req.body.nickname });
+    res.status(200).json({ nickname: req.body.nickname }); // action.data부분
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+router.patch('/:userId/follow', isLoggedIn, async (req, res, next) => {
+  // PATCH /user/1/follow
+  try {
+    const user = await User.findOne({ where: { id: req.params.userId } });
+    if (!user) {
+      res.status(403).send('존재하지 않는 사용자 입니다');
+    }
+    await user.addFollowers(req.user.id); // 내 ID 팔로우 추가
+    res.status(200).json({ UserId: parseInt(req.params.userId, 10) }); // action.data부분 / 상대방 ID
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+router.delete('/:userId/follow', isLoggedIn, async (req, res, next) => {
+  // DELETE /user/1/follow
+  try {
+    const user = await User.findOne({ where: { id: req.params.userId } });
+    if (!user) {
+      res.status(403).send('존재하지 않는 사용자 입니다');
+    }
+    await user.removeFollowers(req.user.id);
+    res.status(200).json({ UserId: parseInt(req.params.userId, 10) }); // action.data부분
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+router.delete('/follower/:userId', isLoggedIn, async (req, res, next) => {
+  // DELETE /user/follower/2
+  try {
+    const user = await User.findOne({ where: { id: req.params.userId } }); // 팔로워한 사람을 찾고
+    if (!user) {
+      res.status(403).send('존재하지 않는 사용자 입니다');
+    }
+    await user.removeFollowings(req.user.id); // 내가 그 사람을 차단하는거랑 팔로워한 사람이 나를 언팔로우하는거랑 똑같다
+    res.status(200).json({ UserId: parseInt(req.params.userId, 10) }); // action.data부분
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+router.get('/followers', isLoggedIn, async (req, res, next) => {
+  // GET /user/1/followers
+  try {
+    const user = await User.findOne({ where: { id: req.user.id } }); // 나를 먼저 찾고
+    if (!user) {
+      res.status(403).send('존재하지 않는 사용자 입니다');
+    }
+    const followers = await user.getFollowers(); // // 팔로워 목록 가지고 온다.
+    res.status(200).json(followers); // action.data부분 / 상대방 ID
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+router.get('/followings', isLoggedIn, async (req, res, next) => {
+  // GET /user/1/followings
+  try {
+    const user = await User.findOne({ where: { id: req.user.id } }); // 나를 먼저 찾고
+    if (!user) {
+      res.status(403).send('존재하지 않는 사용자 입니다');
+    }
+    const followings = await user.getFollowings(); // // 팔로잉 목록 가지고 온다.
+    res.status(200).json(followings); // action.data부분 / 상대방 ID
   } catch (error) {
     console.error(error);
     next(error);
