@@ -100,14 +100,17 @@ router.post('/login', isNotLoggedIn, (req, res, next) => {
           {
             // hasMany라서 복수형 me.Posts
             model: Post,
+            attributes: ['id'],
           },
           {
             model: User,
             as: 'Followings',
+            attributes: ['id'],
           },
           {
             model: User,
             as: 'Followers',
+            attributes: ['id'],
           },
         ],
       });

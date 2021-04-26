@@ -21,9 +21,16 @@ router.post('/', isLoggedIn, async (req, res, next) => {
         },
         {
           model: Comment,
+          include: [
+            {
+              model: User,
+              attributes: ['id', 'nickname'], // include의 User는 비밀번호는 빼야한다. (보안)
+            },
+          ],
         },
         {
           model: User,
+          attributes: ['id', 'nickname'], // include의 User는 비밀번호는 빼야한다. (보안)
         },
       ],
     });
@@ -50,11 +57,22 @@ router.post('/:postId/comment', isLoggedIn, async (req, res, next) => {
 
     const comment = await Comment.create({
       content: req.body.content,
-      PostId: req.params.postId,
-      serId: req.user.id,
+      PostId: parseInt(req.params.postId, 10),
+      UserId: req.user.id,
     });
+
+    const fullComment = await Comment.findOne({
+      where: { id: comment.id },
+      include: [
+        {
+          model: User,
+          attributes: ['id', 'nickname'], // include의 User는 비밀번호는 빼야한다. (보안)
+        },
+      ],
+    });
+
     // 프론트로 돌려주기 -> saga -> addComment result
-    res.status(201).json(comment);
+    res.status(201).json(fullComment);
   } catch (error) {
     console.error(error);
     next(error);

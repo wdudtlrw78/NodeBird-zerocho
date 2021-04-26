@@ -4,8 +4,10 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const dotenv = require('dotenv');
+const morgan = require('morgan');
 
 const postRouter = require('./routes/post');
+const postsRouter = require('./routes/posts');
 const userRouter = require('./routes/user');
 const db = require('./models');
 const passportConfig = require('./passport');
@@ -24,6 +26,7 @@ db.sequelize
 
 passportConfig();
 
+app.use(morgan('dev')); // 프론트에서 백엔드 요청 보낼 때 어떤 요청들 보냈는지 기록 (백엔드에서 디버깅하기 편리)
 app.use(
   cors({
     origin: 'http://localhost:3060', // * 대신 true설정하면 보낸 곳의 주소가 자동으로 들어가 편리
@@ -73,14 +76,7 @@ app.get('/', (req, res) => {
   res.send('hello api');
 });
 
-app.get('/posts', (req, res) => {
-  res.json([
-    { id: 1, content: 'hello' },
-    { id: 2, content: 'hello2' },
-    { id: 3, content: 'hello3' },
-  ]);
-});
-
+app.use('/posts', postsRouter); // posts 여러개 가져오기
 app.use('/post', postRouter); // /post prefix로 붙인다.
 app.use('/user', userRouter); // 회원가입 /user prefix로 붙인다.
 

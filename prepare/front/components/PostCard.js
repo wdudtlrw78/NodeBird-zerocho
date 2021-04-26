@@ -84,9 +84,9 @@ const PostCard = ({ post }) => {
         어떤 게시글에 댓글을 달건지 정보 게시글의 Id 가 필요하다.*/}
           <CommentForm post={post} />
           <List
-            header={`${post.Comments ? post.Comments.length : 0} 댓글`}
+            header={`${post.Comments.length}개의 댓글`}
             itemLayout="horizontal"
-            dataSource={post.Comments || []}
+            dataSource={post.Comments}
             renderItem={(item) => (
               <li>
                 <Comment
@@ -109,7 +109,7 @@ PostCard.propTypes = {
     User: PropTypes.object,
     UserId: PropTypes.number,
     content: PropTypes.string,
-    createdAt: PropTypes.object,
+    createdAt: PropTypes.string,
     Comments: PropTypes.arrayOf(PropTypes.any),
     Images: PropTypes.arrayOf(PropTypes.any),
   }).isRequired,
