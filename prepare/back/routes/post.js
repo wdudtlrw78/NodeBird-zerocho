@@ -85,7 +85,7 @@ router.post('/:postId/comment', isLoggedIn, async (req, res, next) => {
   }
 });
 
-router.patch('/:postId/like', async (req, res, next) => {
+router.patch('/:postId/like', isLoggedIn, async (req, res, next) => {
   // PATCH /post/1/like
   // 관계형 Method 제공 (공통) post.addUser , post.getUser, post.setUser, post.removeUser 유저 생성, 유저 가져오기, 유저 수정, 유저 제거 (models/Post.associate)
   try {
@@ -101,7 +101,7 @@ router.patch('/:postId/like', async (req, res, next) => {
   }
 });
 
-router.delete('/:postId/like', async (req, res, next) => {
+router.delete('/:postId/like', isLoggedIn, async (req, res, next) => {
   // DELETE /post/1/like
   try {
     const post = await Post.findOne({ where: { id: req.params.postId } });
@@ -116,9 +116,21 @@ router.delete('/:postId/like', async (req, res, next) => {
   }
 });
 
-router.delete('/', (req, res) => {
-  // DELETE /post
-  res.send({ id: 1 });
+router.delete('/:postId', isLoggedIn, async (req, res, next) => {
+  // DELETE /post/1
+  try {
+    await Post.destroy({
+      // 제거할 때 쓰인다. destroy : 파괴하다
+      where: {
+        id: req.params.postId,
+        UserId: req.user.id, // 내가 쓴 게시글이어야 한다.
+      },
+    });
+    res.status(200).json({ PostId: parseInt(req.params.postId, 10) }); // params는 문자열이기 때문에 parseInt로 감싸준다
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
 });
 
 module.exports = router;

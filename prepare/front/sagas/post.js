@@ -117,17 +117,17 @@ function* addPost(action) {
 }
 
 function removePostAPI(data) {
-  return axios.post('/api/post', data);
+  return axios.delete(`/post/${data}`);
 }
 
 function* removePost(action) {
   try {
-    // const result = yield call(REMOVEPostAPI);
-    yield delay(1000);
+    const result = yield call(removePostAPI, action.data);
+    // yield delay(1000);
 
     yield put({
       type: REMOVE_POST_SUCCESS,
-      data: action.data,
+      data: result.data,
     });
     // 유저 리듀서 액션 호출
     yield put({

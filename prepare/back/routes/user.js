@@ -175,4 +175,22 @@ router.post('/logout', isLoggedIn, (req, res) => {
   res.status(200).send('ok');
 });
 
+router.patch('/nickname', isLoggedIn, async (req, res, next) => {
+  try {
+    User.update(
+      {
+        // update : 수정
+        nickname: req.body.nickname, // 프론트에서 받은 닉네임
+      },
+      {
+        where: { id: req.user.id }, // 내 아이디
+      }
+    );
+    res.status(200).json({ nickname: req.body.nickname });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
 module.exports = router;

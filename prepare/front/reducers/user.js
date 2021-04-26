@@ -95,14 +95,14 @@ export const REMOVE_POST_OF_ME = 'REMOVE_POST_OF_ME'; // 내 게시글 제거 �
 //   };
 // };
 
-const dummyUser = (data) => ({
-  ...data,
-  nickname: '모모',
-  id: 1,
-  Posts: [{ id: 1 }],
-  Followings: [{ nickname: '무무' }, { nickname: '파파' }],
-  Followers: [{ nickname: '무무' }, { nickname: '파파' }],
-});
+// const dummyUser = (data) => ({
+//   ...data,
+//   nickname: '모모',
+//   id: 1,
+//   Posts: [{ id: 1 }],
+//   Followings: [{ nickname: '무무' }, { nickname: '파파' }],
+//   Followers: [{ nickname: '무무' }, { nickname: '파파' }],
+// });
 
 // action creator
 export const loginRequestAction = (data) => ({
@@ -206,6 +206,7 @@ const reducer = (state = initialState, action) =>
         draft.chnageNicknameDone = false;
         break;
       case CHANGE_NICKNAME_SUCCESS:
+        draft.me.nickname = action.data.nickname;
         draft.chnageNicknameLoading = false;
         draft.chnageNicknameDone = true;
         break;
