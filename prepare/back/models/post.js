@@ -17,6 +17,8 @@ module.exports = (sequlize, DataTypes) => {
   );
 
   Post.associate = (db) => {
+    // 관계형 Method 제공 (공통) post.addUser , post.getUser, post.setUser, post.removeUser 유저 생성, 유저 가져오기, 유저 수정, 유저 제거
+
     db.Post.belongsTo(db.User); // 작성자한테 속해있다.
     db.Post.belongsToMany(db.Hashtag, { through: 'PostHashtag' }); // 다 대 다 관계 왜냐하면 게시글 안에 해시태그가 들어있다
     // 그럼 1 대 다 관계일까?? 항상 반대도 생각해봐야한다. 해시태그 안에 게시글 여러개 들어갈 수 있을까?? 해시태그는 들어있다.
@@ -31,8 +33,9 @@ module.exports = (sequlize, DataTypes) => {
     // 그럼 원본포함 아이디들이 1, 2, 3, 4 가정하고 엑셀 db테이블 관점으로 보면 한 테이블 안에 id , content, RetweetId 엑셀처럼
     // 1번(원본)은 리트윗 안했으니까 RetweetId = null이 처음부터 들어가있을 것이고, 2번 3번 4번은 1번 리트윗했으니까 RetweeId는 1번을 가리킨다.
 
-    db.Post.belongsToMany(db.User, { through: 'Like', as: 'Likers' }); // 중간 테이블 이름 // 유저와 좋아요 버튼 관계 다 대 다 관계 ( 중간 테이블 생성 )
+    // 중간 테이블 이름 // 유저와 좋아요 버튼 관계 다 대 다 관계 ( 중간 테이블 생성 )
     // belongsTo User와 belongsToMany User 가 같아서 헷갈려서 as 를 붙여준다. 나중에 as에 따라서 post.getLikers처럼 게시글 좋아요 누른 사람을 가져오게 된다.
+    db.Post.belongsToMany(db.User, { through: 'Like', as: 'Likers' });
 
     // belongsToMany
     // Hashtag  Post가 있다고 가정하면

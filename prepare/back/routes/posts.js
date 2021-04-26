@@ -34,6 +34,11 @@ router.get('/', async (req, res, next) => {
             },
           ],
         },
+        {
+          model: User, // 좋아요 누른 유저
+          as: 'Likers',
+          attributes: ['id'],
+        },
       ],
       // offset: 0, // 원하는 구간만 가져온다 ex) 0 ~ 10 게시글 가져와라 100이면 101 ~ 110
       // 실무에선 Limit과 offset을 잘 사용하지 않는다.

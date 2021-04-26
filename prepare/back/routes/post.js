@@ -3,6 +3,7 @@ const express = require('express');
 // 게시글 작성, 댓글 작성하는 것도 로그인 여부 파악해야한다.
 const { isLoggedIn } = require('./middlewares');
 const { Post, User, Image, Comment } = require('../models');
+const { post } = require('./posts');
 
 const router = express.Router();
 
@@ -23,14 +24,19 @@ router.post('/', isLoggedIn, async (req, res, next) => {
           model: Comment,
           include: [
             {
-              model: User,
+              model: User, // 댓글 작성자
               attributes: ['id', 'nickname'], // include의 User는 비밀번호는 빼야한다. (보안)
             },
           ],
         },
         {
-          model: User,
+          model: User, // 게시글 작성자
           attributes: ['id', 'nickname'], // include의 User는 비밀번호는 빼야한다. (보안)
+        },
+        {
+          model: User, // 좋아요 누른 유저
+          as: 'Likers',
+          attributes: ['id'],
         },
       ],
     });
@@ -73,6 +79,37 @@ router.post('/:postId/comment', isLoggedIn, async (req, res, next) => {
 
     // 프론트로 돌려주기 -> saga -> addComment result
     res.status(201).json(fullComment);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+router.patch('/:postId/like', async (req, res, next) => {
+  // PATCH /post/1/like
+  // 관계형 Method 제공 (공통) post.addUser , post.getUser, post.setUser, post.removeUser 유저 생성, 유저 가져오기, 유저 수정, 유저 제거 (models/Post.associate)
+  try {
+    const post = await Post.findOne({ where: { id: req.params.postId } });
+    if (!post) {
+      return res.status(403).send('게시글이 존재하지 않습니다.');
+    }
+    await post.addLikers(req.user.id);
+    res.json({ PostId: post.id, UserId: req.user.id });
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+router.delete('/:postId/like', async (req, res, next) => {
+  // DELETE /post/1/like
+  try {
+    const post = await Post.findOne({ where: { id: req.params.postId } });
+    if (!post) {
+      return res.status(403).send('게시글이 존재하지 않습니다.');
+    }
+    await post.removeLikers(req.user.id);
+    res.json({ PostId: post.id, UserId: req.user.id });
   } catch (error) {
     console.error(error);
     next(error);
