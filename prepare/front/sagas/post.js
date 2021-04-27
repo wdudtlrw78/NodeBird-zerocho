@@ -1,4 +1,4 @@
-import { all, delay, fork, put, takeLatest, throttle, call } from 'redux-saga/effects';
+import { all, fork, put, takeLatest, throttle, call } from 'redux-saga/effects';
 import axios from 'axios';
 // import shortId from 'shortid';
 
@@ -21,9 +21,32 @@ import {
   UNLIKE_POST_SUCCESS,
   LIKE_POST_FAILURE,
   UNLIKE_POST_FAILURE,
+  UPLOAD_IMAGES_REQUEST,
+  UPLOAD_IMAGES_SUCCESS,
+  UPLOAD_IMAGES_FAILURE,
   // generateDummyPost,
 } from '../reducers/post';
 import { ADD_POST_TO_ME, REMOVE_POST_OF_ME } from '../reducers/user';
+
+function uploadImagesAPI(data) {
+  return axios.post('/post/images', data); // fome data 그 대로 넣어준다. {name : data}등 감싸면 FOME DATA에서 json형식으로 바뀐다.
+}
+
+function* uploadImages(action) {
+  try {
+    const result = yield call(uploadImagesAPI, action.data);
+    yield put({
+      type: UPLOAD_IMAGES_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: UPLOAD_IMAGES_FAILURE,
+      data: err.response.data,
+    });
+  }
+}
 
 function likePostAPI(data) {
   // 좋아요는 게시글의 일 부분 수정이라 patch ( 좋아요 갯수 1개 올려준다 )
@@ -90,7 +113,7 @@ function* loadPosts(action) {
 
 function addPostAPI(data) {
   // data의 이름을 content 키로 지정 req.body.content
-  return axios.post('/post', { content: data });
+  return axios.post('/post', data); // { content: data } / FormData는 바로 data로 넣어줘야한다.
 }
 
 function* addPost(action) {
@@ -165,6 +188,10 @@ function* addComment(action) {
   }
 }
 
+function* watchUploadImages() {
+  yield takeLatest(UPLOAD_IMAGES_REQUEST, uploadImages);
+}
+
 function* watchLikePost() {
   yield takeLatest(LIKE_POST_REQUEST, likePost);
 }
@@ -191,6 +218,7 @@ function* watchAddComment() {
 
 export default function* postSaga() {
   yield all([
+    fork(watchUploadImages),
     fork(watchLikePost),
     fork(watchUnlikePost),
     fork(watchAddPost),

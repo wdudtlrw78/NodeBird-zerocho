@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const passport = require('passport');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
+const path = require('path');
 
 const postRouter = require('./routes/post');
 const postsRouter = require('./routes/posts');
@@ -33,12 +34,18 @@ app.use(
     credentials: true, // 쿠키도 같이 전달
   })
 );
+
+// static : 합쳐준다 - > __dirname: 현재 폴더 (back) + '/uploads' 대신 path.join으로 쓰인다. 맥이나 리눅스에서는 / 대신 \ 쓰여서 운영체제에따라 다르므로 운영체제에 맞게 자동으로 path.join 쓴다.
+// 첫번째 인자의 / 경로가 localhost:3065/ 가 된다. /images이면 localhost:3065/images 가 된다. -> postForm/img src 경로에 맞게 쓰면된다.
+app.use('/', express.static(path.join(__dirname, 'uploads')));
+
 // app = express인데 express 서버에다가 뭔가를 장착(use)을 해준다. (use 안에 들어가는 것들이 미들웨어이다. 순서도 매우 중요하다.)
 // json, urlencoded 역할이 프론트에서 보낸 데이터를 req.body 안에다가 넣어주는 역할을 한다.
 // 위에서 아래순으로 실행되기 때문에 req.body를 먼저 찾고 라우터 들을 찾아야되기 때문에 꼭 라우터 들 보다 위에 적어줘야 한다.
-// json과 urlencoded의 차이점은 json은 프론트에서 json형식으로 데이터를 보냈을 때 그 json 형식의 데이터를 req.body로 넣어주고
+// json과 urlencoded의 차이점은 json은 프론트에서 json형식(axios)으로 데이터를 보냈을 때 그 json 형식의 데이터를 req.body로 넣어주고
 // urlencoded는 form submit을 했을 때 urlencoded방식으로 넘어온다. 그래서 form 했을 때 req.body안에 데이터 넣어준다.
 app.use(express.json());
+// multer = 주로 이미지나, 파일 app.js보단 각 라우터마다 필요할 때 import한다.
 app.use(express.urlencoded({ extended: true }));
 
 // 쿠키/ 세션 : 로그인하면 브라우저랑 서버랑 같은 정보를 들고 있어야한다.
