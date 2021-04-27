@@ -5,7 +5,7 @@ const fs = require('fs'); // 파일 시스템 조작
 
 // 게시글 작성, 댓글 작성하는 것도 로그인 여부 파악해야한다.
 const { isLoggedIn } = require('./middlewares');
-const { Post, User, Image, Comment } = require('../models');
+const { Post, User, Image, Comment, Hashtag } = require('../models');
 
 const router = express.Router();
 
@@ -36,11 +36,28 @@ const upload = multer({
 
 router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
   // POST /post
+  const hashtags = req.body.content.match(/#[^\s#]+/g);
+
   try {
     const post = await Post.create({
       content: req.body.content,
       UserId: req.user.id,
     });
+
+    if (hashtags) {
+      const result = await Promise.all(
+        hashtags.map(
+          (tag) =>
+            // create대신에 findOrCreate : 해시태그에 누가 '노드' 를 등록해놨으면 그냥 무시하고 등록 안해놨으면 그제서야 등록한다(가져오지는 않는다). 대신에 where로 감싸줘야 한다.
+            Hashtag.findOrCreate({
+              where: { name: tag.slice(1).toLowerCase() },
+            }) // slice(1)은 # 제거하고 ex) 리액트 노드만 저장하기 위해서 toLowerCase은 대문자로 REACT 적으나 소문자 react 적으나 똑같이 검색되게 하기 위해서
+          // 일부로 db에 저장할 때는 소문자로 저장되게 한다.
+        )
+      );
+      // findOrCreate 때문에([값, 불리언] 반환) result의 결과가 두번째가 생성된건지 불리언 값 [[노드, true], [리액트, true]]라서 map으로 첫번째꺼 추출.
+      await post.addHashtags(result.map((v) => v[0]));
+    }
 
     if (req.body.image) {
       if (Array.isArray(req.body.image)) {
@@ -52,6 +69,7 @@ router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
         // file은 보통 S3 클라우드에 올려서 CDN 캐싱을 적용하고 db는 파일의 접근할 수 있는 주소만 가지고 있다.
         const images = await Promise.all(
           req.body.image.map((image) => Image.create({ src: image }))
+          // Image.create는 Image 테이블에 로우로 이미지 데이터를 넣어주는 함수이다.
         );
         await post.addImages(images); // 위의 Post.create({}) 한 것에다가 알아서 images가 추가가 된다. 그리고 나중에 fullPost할 때 include 이미지하면 이미지 정보가 post.images로 들어간다.
       } else {
