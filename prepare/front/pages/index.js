@@ -9,7 +9,15 @@ import { LOAD_MY_INFO_REQUEST } from '../reducers/user';
 const Home = () => {
   const dispatch = useDispatch();
   const { me } = useSelector((state) => state.user);
-  const { mainPosts, hasMorePost, loadPostsLoading } = useSelector((state) => state.post);
+  const { mainPosts, hasMorePost, loadPostsLoading, retweetError } = useSelector((state) => state.post);
+
+  // PostCard() 안에 useEffect 에러 넣으면 ex) 게시글 8개이면 useEffect가 모두 다 발생해서 상위구간 index파일에 넣어준다.
+  // 아니면 PostCard안에 retweetError에다가 리트윗 게시글 id까지 같이 넣어서 그 포스트카드만 리렌더링 방식도 있다.
+  useEffect(() => {
+    if (retweetError) {
+      alert(retweetError);
+    }
+  }, [retweetError]);
 
   useEffect(() => {
     dispatch({

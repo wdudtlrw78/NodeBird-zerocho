@@ -53,3 +53,14 @@ module.exports = (sequlize, DataTypes) => {
   };
   return Post;
 };
+
+// 질문
+// 초반에 시퀄라이즈로 post modeling 할 때
+// 리트윗을
+// db.Post.belongsTo(db.Post, { as: "Retweet" });
+// 이렇게 작성 했었습니다.
+// 그런데 리트윗의 경우 post와 post가 1:N 관계인데
+// post.hasMany(db.Post)도 같이 추가해 줘야 하는거 아닌가요? 아니면 같은 모델끼리 1:N관계일 때는 belongsTo만 해줘도 괜찮은건가요?
+
+// 답변
+// 같은 모델끼리는 belongsTo만 해주시면 됩니다. 어떻게서든 모델들 간의 관계를 시퀄라이즈가 파악할수 있으면 됩니다. belongsTo는 필수이지만 hasMany나 hasOne은 필수가 아니라고 보시면 됩니다.

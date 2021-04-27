@@ -39,6 +39,19 @@ router.get('/', async (req, res, next) => {
           as: 'Likers',
           attributes: ['id'],
         },
+        {
+          model: Post, // 리트윗 게시물
+          as: 'Retweet',
+          include: [
+            {
+              model: User,
+              attributes: ['id', 'nickname'],
+            },
+            {
+              model: Image,
+            },
+          ],
+        },
       ],
       // offset: 0, // 원하는 구간만 가져온다 ex) 0 ~ 10 게시글 가져와라 100이면 101 ~ 110
       // 실무에선 Limit과 offset을 잘 사용하지 않는다.

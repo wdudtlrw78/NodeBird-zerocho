@@ -44,6 +44,12 @@ router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
       UserId: req.user.id,
     });
 
+    //req.body.image가 [이미지1, 이미지2]라고 해볼게요.
+    // .map((image) => Image.create({ src: image })를 하게 되면
+    // [create({ src: '이미지1' }), create({ src: '이미지2' })]가 됩니다.
+    // create는 Promise이므로 await을 해주어야 하는데 보통 Promise의 배열은 Promise.all로 await을 해줍니다.
+    // await Promise.all까지 하게 되면 모든 Promise가 완료될때까지 기다립니다. 기다린 후에 결과가 변수에 들어갑니다.
+    // 결과로 [등록된이미지1, 등록된이미지2]가 나옵니다.
     if (hashtags) {
       const result = await Promise.all(
         hashtags.map(
@@ -129,6 +135,105 @@ router.post('/images', isLoggedIn, upload.array('image'), (req, res, next) => {
   // 좀 오래걸리는 것을 먼저 처리하고 그 다음에 contnet올리는 방식 (2번째 효율적이다.)
   // 단점 : 1. 요청 두 번 보내기 때문에 백엔드쪽에서 좀 더 복잡하다.
   // 2. 이미지를 먼저 올리면 중간에 이미지 올렸다가 마음이 바뀌어서 게시글 안 쓸 쑤도 있기떄문에 그러면 이미지만 업로드되고 게시글은 안써진다. (보통은 이미지를 안지우고 남겨둔다. 자산이기 때문에 (머신러닝 등))
+});
+
+router.post('/:postId/retweet', isLoggedIn, async (req, res, next) => {
+  //  db의 테이블 retweet이 null이다가 유저가 리트윗하면 uerId가 테이블에 생긴다.
+  // POST /post/1/comment
+  try {
+    // 악성 사용자가 10으로 바꾸고 삭제하거나 댓글 달 수 있기에 꼼꼼하게 검사
+    const post = await Post.findOne({
+      where: { id: req.params.postId },
+      include: [
+        {
+          // models/post/db.Post.belongsTo(db.Post, { as: 'Retweet' });
+          model: Post,
+          as: 'Retweet',
+        },
+      ],
+    });
+    if (!post) {
+      // return 꼭 붙이기 센드가 두 번 실행되지 않게하기 위해 요청 1번에 응답 1번
+      // return 안 붙이면 밑에 json까지 send 주의
+      return res.status(403).send('존재하지 않는 게시글입니다');
+    }
+    // 자신 아이디를 리트윗 또는 자기 게시글을 남이 리트윗한 것을 자신이 다시 리트윗하는 것을 막아준다. (include 한 이유)
+    if (
+      req.user.id === post.UserId ||
+      (post.Retweet && post.Retweet.UserId === req.user.id)
+    ) {
+      return res.status(403).send('자신의 글은 리트윗할 수 없습니다.');
+    }
+    // 남의 게시글을 다른 사람이 리트윗한 것을 내가 리트윗하는 것은 가능하다. (트위터의 성질)
+    const retweetTargetId = post.RetweetId || post.id; // 리트윗한 게시글을 찾아보고 있으면 리트윗한 아이디를 쓰고((post.RetweetId)) 없으면 db테이블의 null이기 때문에 리트윗한 게시글 아이디로 쓴다(post.id);
+
+    const exPost = await Post.findOne({
+      where: {
+        UserId: req.user.id,
+        RetweetId: retweetTargetId,
+      },
+    });
+    // a라는 게시글을 리트윗을 했는데 한 번은 괜찮은데 두 번하는것은 막아줘야한다.
+    if (exPost) {
+      return res.status(403).send('이미 리트윗했습니다.');
+    }
+
+    const retweet = await Post.create({
+      UserId: req.user.id,
+      RetweetId: retweetTargetId,
+      content: 'retweet', // model/post/의 allowNull: false이기때문에 어떤 값 이든 넣어줘야 한다.
+    });
+    const retweetWithPrevPost = await Post.findOne({
+      where: { id: retweet.id },
+
+      // 나중에 include가 너무 복잡해지면 db에서 가져오는데 속도가 너무 느려질 수 있다.
+      // 해서 분리해야할 가능성이 있다.
+      // Comment 같은 걸 쪼개준다 ex) 처음엔 게시글까지는 있고 댓글같은경우 나중에 불러와도 되기 때문에 router를 하나 더 파서
+      // 게시글 가져온 다음에  댓글만 따로 가져오는 라우터를 만든다던지 댓글같은거는 댓글창 열었을 때 그 때 불러온다던지 수를 다른식으로 해야한다.
+      include: [
+        {
+          model: Post,
+          as: 'Retweet',
+          include: [
+            {
+              model: User,
+              attributes: ['id', 'nickname'],
+            },
+            {
+              model: Image,
+            },
+          ],
+        },
+        {
+          model: User,
+          attributes: ['id', 'nickname'],
+        },
+        {
+          model: Image,
+        },
+        {
+          model: Comment,
+          include: [
+            {
+              model: User,
+              attributes: ['id', 'nickname'],
+            },
+          ],
+        },
+        {
+          // 좋아요 누른 목록
+          model: User,
+          as: 'Likers',
+          attributes: ['id'],
+        },
+      ],
+    });
+
+    res.status(201).json(retweetWithPrevPost);
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
 });
 
 router.post('/:postId/comment', isLoggedIn, async (req, res, next) => {

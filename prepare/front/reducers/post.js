@@ -46,6 +46,10 @@ export const initialState = {
   upLoadImagesLoading: false, // 이미지 추가
   upLoadImagesDone: false,
   upLoadImagesError: null,
+
+  reweetLoading: false, // 리트윗 추가
+  reweetDone: false,
+  reweetError: null,
 };
 
 // export const generateDummyPost = (number) =>
@@ -102,6 +106,10 @@ export const ADD_COMMENT_REQUEST = 'ADD_COMMENT_REQUEST';
 export const ADD_COMMENT_SUCCESS = 'ADD_COMMENT_SUCCESS';
 export const ADD_COMMENT_FAILURE = 'ADD_COMMENT_FAILURE';
 
+export const RETWEET_REQUEST = 'RETWEET_REQUEST';
+export const RETWEET_SUCCESS = 'RETWEET_SUCCESS';
+export const RETWEET_FAILURE = 'RETWEET_FAILURE';
+
 export const REMOVE_IMAGE = 'REMOVE_IMAGE';
 
 // action // 동적으로 필요하면 action creator 사용
@@ -151,6 +159,20 @@ export const addComment = (data) => ({
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
+      case RETWEET_REQUEST:
+        draft.retweetLoading = true;
+        draft.retweetDone = false;
+        draft.retweetError = null;
+        break;
+      case RETWEET_SUCCESS:
+        draft.retweetLoading = false;
+        draft.retweetDone = true;
+        draft.mainPosts.unshift(action.data);
+        break;
+      case RETWEET_FAILURE:
+        draft.retweetLoading = false;
+        draft.retweetError = action.error;
+        break;
       case REMOVE_IMAGE:
         draft.imagePaths = draft.imagePaths.filter((v, i) => i !== action.data);
         // 만약 서버쪽에서도 지우고싶으면 REQUSET, SUCCESS, FAILURE 비동기 함수로 만들면 된다. 하지만 이미지는 보통 잘 안지운다.(자산)
