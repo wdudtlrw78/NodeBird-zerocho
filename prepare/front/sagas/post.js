@@ -114,13 +114,14 @@ function* unlikePost(action) {
   }
 }
 
-function loadPostsAPI(data) {
-  return axios.get('/posts', data);
+function loadPostsAPI(lastId) {
+  return axios.get(`/posts?lastId=${lastId || 0}`); //get은 두번 째자리는 WithCredentials 이기 때문에 data 넣을 자리가 없어서 쿼리스트링 방식으로 ?key=${값} (주소의 데이터가 포함)
+  // 장점이 주소만를 캐싱하면 데이터까지 캐싱이 된다. post나 put patch는 데이터 캐싱이 안되는데 get만의 이점이 data까지 캐싱할 수 있다.
 }
 
 function* loadPosts(action) {
   try {
-    const result = yield call(loadPostsAPI, action.data);
+    const result = yield call(loadPostsAPI, action.lastId);
     // yield delay(1000);
     yield put({
       type: LOAD_POSTS_SUCCESS,

@@ -17,7 +17,7 @@ export const initialState = {
   imagePaths: [], // 이미지 업로드할 때 필요한 데이터 저장소
 
   // 데이터가 수백만게 있다고 하면 사람들은 보다 지친다. 그럼 데이터가 80개 밖에 없다면 80개 다 보고나서 데이터가 불러올때가 없을 때 대비
-  hasMorePost: true, // 처음 (0개) 일 때는 가져오려는 시도 를 해야한다.
+  hasMorePosts: true, // 처음 (0개) 일 때는 가져오려는 시도 를 해야한다.
 
   loadPostsLoading: false, // 로딩
   loadPostsDone: false,
@@ -231,8 +231,9 @@ const reducer = (state = initialState, action) =>
       case LOAD_POSTS_SUCCESS:
         draft.loadPostsLoading = false;
         draft.loadPostsDone = true;
-        draft.mainPosts = action.data.concat(draft.mainPosts); // generateDummyPost(10)이면 기존 10개 + 더미데이터 10 = 20개 된다. 즉 10개씩 불러온다.
-        draft.hasMorePost = draft.mainPosts.length < 50;
+        draft.mainPosts = draft.mainPosts.concat(action.data); // generateDummyPost(10)이면 기존 10개 + 더미데이터 10 = 20개 된다. 즉 10개씩 불러온다.
+        draft.hasMorePosts = action.data.length === 10;
+        // draft.mainPosts.length < 50;
         break;
       case LOAD_POSTS_FAILURE:
         draft.loadPostsLoading = false;

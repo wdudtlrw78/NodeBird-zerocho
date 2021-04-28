@@ -1,4 +1,5 @@
 const express = require('express');
+const { Op } = require('sequelize');
 
 const { Post, Image, User, Comment } = require('../models');
 
@@ -7,8 +8,17 @@ const router = express.Router();
 // GET /posts 여러개 가져오기
 router.get('/', async (req, res, next) => {
   try {
+    const where = {};
+    if (parseInt(req.query.lastId, 10)) {
+      // 초기 로딩이 아닐 때
+      // lastId 다음 꺼 불러와야한다.
+      where.id = { [Op.lt]: parseInt(req.query.lastId, 10) }; // lastId 보다 작은 id 10개를 불러와라(op)
+      // Op = operator
+      // 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1
+    }
     const posts = await Post.findAll({
-      Limit: 10, // 10개만 가져와라 (ex 스크롤 내리면 10개 씩)
+      where,
+      limit: 10, // 10개만 가져와라 (ex 스크롤 내리면 10개 씩)
 
       // 댓글 정렬: order / DESC : 내림차순
       order: [
