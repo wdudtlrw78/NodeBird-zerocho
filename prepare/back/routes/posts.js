@@ -75,7 +75,8 @@ router.get('/', async (req, res, next) => {
       // 게시판같은 경우 틀이 고정이 되어있기때문에 offset Limit 적용해도 문제는 없지만,
       // 베스트는 lastId로 페이지 네이션 구현할 때 (인피니트 스크롤링, 게시판 등) lastId Limit 방식
     });
-    console.log(posts);
+
+    // console.log(posts);
     res.status(200).json(posts);
   } catch (error) {
     console.error;

@@ -9,6 +9,7 @@ const router = express.Router();
 // 사용자 불러오기 (새로고침 로그인 풀림 해결)
 // 새로고침 할 때마다 요청
 router.get('/', async (req, res, next) => {
+  console.log(req.headers); // headers 안에 쿠키가 들어있다. ( 쿠키 들어있는지 터미널 확인 )
   // GET /user
   try {
     // 로그인하지 않은 상태에서 요청하면 { id: req.user.id } 에러 발생 요청 막아주기
