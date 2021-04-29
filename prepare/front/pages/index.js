@@ -1,10 +1,13 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { END } from 'redux-saga';
+
 import AppLayouts from '../components/AppLayouts';
 import PostCard from '../components/PostCard';
 import PostForm from '../components/PostForm';
 import { LOAD_POSTS_REQUEST } from '../reducers/post';
 import { LOAD_MY_INFO_REQUEST } from '../reducers/user';
+import wrapper from '../store/configuerStore';
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -18,15 +21,6 @@ const Home = () => {
       alert(retweetError);
     }
   }, [retweetError]);
-
-  useEffect(() => {
-    dispatch({
-      type: LOAD_MY_INFO_REQUEST,
-    });
-    dispatch({
-      type: LOAD_POSTS_REQUEST,
-    });
-  }, []);
 
   useEffect(() => {
     // 스크롤 위치 판단
@@ -71,5 +65,31 @@ const Home = () => {
     </AppLayouts>
   );
 };
+
+export const getServerSideProps = wrapper.getServerSideProps(async (context) => {
+  // SSR적용 : 자동적으로 Home보다 먼저 실행된다. 그래야 알아서 데이터를 채운 다음에 화면에 렌더링된다.
+  // 화면 렌더링 될 때에는 Redux의 데이터가 채워진채로 처음부터 존재하게 된다.
+  console.log(context); // stort안에 context가 들어있다.
+  context.store.dispatch({
+    type: LOAD_MY_INFO_REQUEST,
+  });
+  context.store.dispatch({
+    type: LOAD_POSTS_REQUEST,
+  });
+  // HYDRATE
+  // {type: "__NEXT_REDUX_WRAPPER_HYDRATE__", payload: {…}}
+  // getServerSideProps에서 dispatch를 하면 store의 변화가 생기면서 각각의 LOAD_MY_INFO_REQUEST, LOAD_POSTS_REQUEST store에 정보가 들어간다.
+  // 어떻게 들어가냐면 HYDRATE 액션(reduces.index)이 실행되면서 받는다.
+  // Redux SSR 원리가 리덕스 데브툴의 @@INIT 에서는 초기상태(비어있음) 그대로 있지만 getServerSideProps 실행되고나서 결과를 HYDRATE 보내줘서 HYDRATE 액션이 실행된다(playload안에 index, user, post 결과가 나온다)
+  // 문제가 아직 HYDRATE 조차도 user의 me랑 post의 mainPosts랑 두개가 안들어있다.
+  // Diff안에 index 안에 또 index가 들어있다. (8분 대 시청)
+  // 해결은 index의 rootReducer로 이동하자.
+
+  //문제점 loadUserLoading : true, loadPostsLoding : true, true는 리퀘스트 때 true가 된다. 즉 REQUEST, REQUEST true가 되자마자 프론트 화면으로 돌아오는데
+  // 원하는 바는 서버쪽에서 SUCESS, SUCESS 되고나서 데이터 완성 후 프론트 화면으로 건너오길 바란다.
+  // 두개를 장착안하면
+  context.store.dispatch(END);
+  await context.store.sagaTask.toPromise(); // sageTask는 configuerStore에서 설정했다.
+});
 
 export default Home;

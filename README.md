@@ -32,7 +32,7 @@
 
   <br>
 
-## SSR, CSR and Next.JS
+## SSR, CSR
 
 <br>
 
