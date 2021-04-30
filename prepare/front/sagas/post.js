@@ -27,6 +27,9 @@ import {
   RETWEET_REQUEST,
   RETWEET_SUCCESS,
   RETWEET_FAILURE,
+  LOAD_POST_REQUEST,
+  LOAD_POST_SUCCESS,
+  LOAD_POST_FAILURE,
   // generateDummyPost,
 } from '../reducers/post';
 import { ADD_POST_TO_ME, REMOVE_POST_OF_ME } from '../reducers/user';
@@ -114,6 +117,27 @@ function* unlikePost(action) {
   }
 }
 
+function loadPostAPI(data) {
+  return axios.get(`/post/${data}`);
+}
+
+function* loadPost(action) {
+  try {
+    const result = yield call(loadPostAPI, action.data);
+    // yield delay(1000);
+    yield put({
+      type: LOAD_POST_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: LOAD_POST_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
 function loadPostsAPI(lastId) {
   return axios.get(`/posts?lastId=${lastId || 0}`); //get은 두번 째자리는 WithCredentials 이기 때문에 data 넣을 자리가 없어서 쿼리스트링 방식으로 ?key=${값} (주소의 데이터가 포함)
   // 장점이 주소만를 캐싱하면 데이터까지 캐싱이 된다. post나 put patch는 데이터 캐싱이 안되는데 get만의 이점이 data까지 캐싱할 수 있다.
@@ -128,6 +152,7 @@ function* loadPosts(action) {
       data: result.data,
     });
   } catch (err) {
+    console.error(err);
     yield put({
       type: LOAD_POSTS_FAILURE,
       error: err.response.data,
@@ -228,6 +253,10 @@ function* watchUnlikePost() {
   yield takeLatest(UNLIKE_POST_REQUEST, unlikePost);
 }
 
+function* watchLoadPost() {
+  yield takeLatest(LOAD_POST_REQUEST, loadPost);
+}
+
 function* watchLoadPosts() {
   yield throttle(5000, LOAD_POSTS_REQUEST, loadPosts);
 }
@@ -251,6 +280,7 @@ export default function* postSaga() {
     fork(watchLikePost),
     fork(watchUnlikePost),
     fork(watchAddPost),
+    fork(watchLoadPost),
     fork(watchLoadPosts),
     fork(watchRemovePost),
     fork(watchAddComment),

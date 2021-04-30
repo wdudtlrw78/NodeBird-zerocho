@@ -13,15 +13,19 @@ export const initialState = {
 
   // 대문자 얘들은 서버에서 주는 얘들인데 ID가 고유하게 필요하다 ( 나중에 Key로 판단 )
   mainPosts: [],
-
+  singlePost: null,
   imagePaths: [], // 이미지 업로드할 때 필요한 데이터 저장소
 
   // 데이터가 수백만게 있다고 하면 사람들은 보다 지친다. 그럼 데이터가 80개 밖에 없다면 80개 다 보고나서 데이터가 불러올때가 없을 때 대비
   hasMorePosts: true, // 처음 (0개) 일 때는 가져오려는 시도 를 해야한다.
 
-  loadPostsLoading: false, // 로딩
+  loadPostsLoading: false, // 게시글들 로딩
   loadPostsDone: false,
   loadPostsError: null,
+
+  loadPostLoading: false, // 단일 게시글 로딩
+  loadPostDone: false,
+  loadPostError: null,
 
   likePostLoading: false, // 좋아요
   likePostDone: false,
@@ -89,6 +93,10 @@ export const LIKE_POST_FAILURE = 'LIKE_POST_FAILURE';
 export const UNLIKE_POST_REQUEST = 'UNLIKE_POST_REQUEST';
 export const UNLIKE_POST_SUCCESS = 'UNLIKE_POST_SUCCESS';
 export const UNLIKE_POST_FAILURE = 'UNLIKE_POST_FAILURE';
+
+export const LOAD_POST_REQUEST = 'LOAD_POST_REQUEST';
+export const LOAD_POST_SUCCESS = 'LOAD_POST_SUCCESS';
+export const LOAD_POST_FAILURE = 'LOAD_POST_FAILURE';
 
 export const LOAD_POSTS_REQUEST = 'LOAD_POSTS_REQUEST';
 export const LOAD_POSTS_SUCCESS = 'LOAD_POSTS_SUCCESS';
@@ -222,6 +230,20 @@ const reducer = (state = initialState, action) =>
       case UNLIKE_POST_FAILURE:
         draft.unlikePostLoading = false;
         draft.unlikePostError = action.error;
+        break;
+      case LOAD_POST_REQUEST:
+        draft.loadPostLoading = true;
+        draft.loadPostDone = false;
+        draft.loadPostError = null;
+        break;
+      case LOAD_POST_SUCCESS:
+        draft.loadPostLoading = false;
+        draft.loadPostDone = true;
+        draft.singlePost = action.data;
+        break;
+      case LOAD_POST_FAILURE:
+        draft.loadPostLoading = false;
+        draft.loadPostError = action.error;
         break;
       case LOAD_POSTS_REQUEST:
         draft.loadPostsLoading = true;
