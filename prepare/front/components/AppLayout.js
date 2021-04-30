@@ -31,7 +31,7 @@ const SearchInput = styled(Input.Search)`
   vertical-align: middle;
 `;
 
-const AppLayouts = ({ children }) => {
+const AppLayout = ({ children }) => {
   // const [isLoggedIn, setIsLoggedIn] = useState(false); 더미데이터
   // useSelector는 npm i react-redux
   // isLoggedIn이 변경되면 알아서 AppLayouts 컴포넌트가 리렌더링 된다.
@@ -72,11 +72,7 @@ const AppLayouts = ({ children }) => {
         </Col>
         <Col xs={24} md={6}>
           {/*target="_blank" 적용할 때 보안의 위협이 있어서 항상 rel="noreferrer noopener" 적용한다.*/}
-          <a
-            href="https://www.google.com"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
+          <a href="https://www.google.com" target="_blank" rel="noreferrer noopener">
             Google
           </a>
         </Col>
@@ -85,8 +81,8 @@ const AppLayouts = ({ children }) => {
   );
 };
 
-AppLayouts.propTypes = {
+AppLayout.propTypes = {
   children: PropTypes.node.isRequired,
 };
 
-export default AppLayouts;
+export default AppLayout;

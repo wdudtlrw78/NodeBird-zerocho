@@ -53,6 +53,56 @@ router.get('/', async (req, res, next) => {
   }
 });
 
+// 남의정보 가져오기
+router.get('/:userId', async (req, res, next) => {
+  // GET /user/1
+  try {
+    const fullUserWithoutPassword = await User.findOne({
+      where: { id: req.params.userId },
+      attributes: {
+        // attributes: [], // 원하는 정보만 받기
+        exclude: ['password'], // 전체 데이터중에 password만 빼고 가져오겠다.
+      },
+      include: [
+        {
+          // hasMany라서 복수형 me.Posts
+          model: Post,
+
+          // me data
+          // 숫자 갯수만 알아내면 되기 때문에 id만 가져오면 length 길이로 몇 개, 몇 명인지 알 수 있고 나머지 불필요한 데이터들은 안받을 수 있다.
+          // 만약 팔로워 팔로잉이 수백만명이고 데이터에 전부 가득 차있으면 용량차고 모바일 시 느려지는 현상 방지
+          attributes: ['id'],
+        },
+        {
+          model: User,
+          as: 'Followings',
+          attributes: ['id'],
+        },
+        {
+          model: User,
+          as: 'Followers',
+          attributes: ['id'],
+        },
+      ],
+    });
+    if (fullUserWithoutPassword) {
+      // 시퀄라이즈에서 불러온 data는 JSON이 아니라서 JSON으로 데이터 형식으로 변경
+      const data = fullUserWithoutPassword.toJSON();
+      // about.js
+      // length로 덧붙여 넣어야지 id들이 안들어있어서 보안에 안정적이다. (개인정보 침해예방)
+      data.Posts = data.Posts.length;
+      data.Followers = data.Followers.length;
+      data.Followings = data.Followings.length;
+      res.status(200).json(data);
+    } else {
+      res.status(404).json('존재하지 않는 사용자입니다.');
+    }
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
 //로그인 POST / user /login
 // passport 전략 실행
 // passport는 사용방법이 다르다 원래는 req, res, next가 없는 미들웨어인데 미들웨어를 확장한다(express 기법중 하나).

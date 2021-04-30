@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { END } from 'redux-saga';
 
-import AppLayouts from '../components/AppLayouts';
+import AppLayout from '../components/AppLayout';
 import PostCard from '../components/PostCard';
 import PostForm from '../components/PostForm';
 import { LOAD_POSTS_REQUEST } from '../reducers/post';
@@ -58,12 +58,12 @@ const Home = () => {
   }, [hasMorePosts, loadPostsLoading, mainPosts]);
 
   return (
-    <AppLayouts>
+    <AppLayout>
       {me && <PostForm />}
       {mainPosts.map((post) => (
         <PostCard key={post.id} post={post} />
       ))}
-    </AppLayouts>
+    </AppLayout>
   );
 };
 
@@ -78,6 +78,8 @@ export const getServerSideProps = wrapper.getServerSideProps(async (context) => 
   // 서버에서 서버로 요청을 보내면 쿠키는 자동으로 보내주는것이 아니라 우리가 axios에서 직접 넣어줘서 보내줘야 한다.
 
   // 서버쪽으로 쿠키가 전달된다.
+  console.log('getServerSideProps start');
+  console.log(context.req.headers);
   const cookie = context.req ? context.req.headers.cookie : ''; // 서버쪽에서 실행되면 context.req가 존재한다.
 
   // 우리가 개별적으로 접속하는 브라우저가 개별 몫을 하는데 서버는 중앙 서버의 딱 하나밖에 없다.
@@ -111,6 +113,7 @@ export const getServerSideProps = wrapper.getServerSideProps(async (context) => 
   // 원하는 바는 서버쪽에서 SUCESS, SUCESS 되고나서 데이터 완성 후 프론트 화면으로 건너오길 바란다.
   // 두개를 장착해야한다.
   context.store.dispatch(END);
+  console.log('getServerSideProps end');
   await context.store.sagaTask.toPromise(); // sageTask는 configuerStore에서 설정했다.
 });
 

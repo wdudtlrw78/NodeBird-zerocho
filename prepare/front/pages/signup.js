@@ -4,9 +4,13 @@ import { Form, Input, Checkbox, Button } from 'antd';
 import styled from 'styled-components';
 import { useDispatch, useSelector } from 'react-redux';
 import Router from 'next/router';
-import AppLayouts from '../components/AppLayouts';
+import { END } from 'redux-saga';
+import axios from 'axios';
+
+import AppLayout from '../components/AppLayout';
 import useInput from '../hooks/useInput';
-import { SIGN_UP_REQUEST } from '../reducers/user';
+import { LOAD_MY_INFO_REQUEST, SIGN_UP_REQUEST } from '../reducers/user';
+import wrapper from '../store/configuerStore';
 
 const ErrorMessage = styled.div`
   color: red;
@@ -72,7 +76,7 @@ const Signup = () => {
   }, [email, password, passwordCheck, term]);
 
   return (
-    <AppLayouts>
+    <AppLayout>
       <Head>
         <title>회원가입 | NodeBird</title>
       </Head>
@@ -110,8 +114,29 @@ const Signup = () => {
           </Button>
         </div>
       </Form>
-    </AppLayouts>
+    </AppLayout>
   );
 };
+
+export const getServerSideProps = wrapper.getServerSideProps(async (context) => {
+  // 회원가입 페이지도 내가 로그인 되어있으면 회원가입 페이지는 빈칸이 되어있거나 첫페이지로 돌려주거나
+  // 로그인 안되어있으면 회원가입 페이지 보여주고 즉 로그인 여부에따라 화면이 달라진다.
+  // 그럼 getServerSideProps
+  console.log('getServerSideProps start');
+  console.log(context.req.headers);
+  const cookie = context.req ? context.req.headers.cookie : '';
+
+  if (context.req && cookie) {
+    axios.defaults.headers.Cookie = cookie;
+  }
+
+  context.store.dispatch({
+    type: LOAD_MY_INFO_REQUEST,
+  });
+
+  context.store.dispatch(END);
+  console.log('getServerSideProps end');
+  await context.store.sagaTask.toPromise();
+});
 
 export default Signup;
