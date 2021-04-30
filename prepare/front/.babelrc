@@ -1,0 +1,13 @@
+// Next도 내부적으로 webpack이 돌아가지만 일부분 커스텀마이징도 할 수 있다.
+{
+  "presets": ["next/babel"],
+  "plugins": [
+    [
+      "babel-plugin-styled-components", // npm i babel-plugin-styled-components
+      {
+        "ssr": true,
+        "displayName": true // displayName 클래스명 난독화되어있는 걸 컴포넌트 이름으로 바뀌어서 좀 더 보기가 쉬워진다.
+      }
+    ]
+  ]
+}
