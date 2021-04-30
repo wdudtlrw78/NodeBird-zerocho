@@ -10,6 +10,7 @@ const path = require('path');
 const postRouter = require('./routes/post');
 const postsRouter = require('./routes/posts');
 const userRouter = require('./routes/user');
+const hashtagRouter = require('./routes/hashtag');
 const db = require('./models');
 const passportConfig = require('./passport');
 
@@ -86,6 +87,7 @@ app.get('/', (req, res) => {
 app.use('/posts', postsRouter); // posts 여러개 가져오기
 app.use('/post', postRouter); // /post prefix로 붙인다.
 app.use('/user', userRouter); // 회원가입 /user prefix로 붙인다.
+app.use('/hashtag', hashtagRouter); // hashtag 가져오기
 
 // app.use((err, req, res, next) => {
 // 에러 처리 미들웨어 : 내부적으로 들어있지만 커스텀으로 쓸 때는 에러 페이지를 따로 표시하고싶다던가 어떤 정보는 빼고 하고싶다던가 등 사용

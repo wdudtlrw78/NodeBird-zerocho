@@ -1,12 +1,10 @@
 const express = require('express');
+const { Post, Hashtag, Image, Comment, User } = require('../models');
 const { Op } = require('sequelize');
-
-const { Post, Image, User, Comment } = require('../models');
-
 const router = express.Router();
 
-// GET /posts 여러개 가져오기
-router.get('/', async (req, res, next) => {
+router.get('/:hashtag', async (req, res, next) => {
+  //GET /hashtag/노드
   try {
     const where = {};
     if (parseInt(req.query.lastId, 10)) {
@@ -22,11 +20,16 @@ router.get('/', async (req, res, next) => {
       limit: 10, // 10개만 가져와라 (ex 스크롤 내리면 10개 씩)
 
       // 댓글 정렬: order / DESC : 내림차순
-      order: [
-        ['createdAt', 'DESC'],
-        [Comment, 'createdAt', 'DESC'],
-      ],
+      order: [['createdAt', 'DESC']],
       include: [
+        {
+          // 해쉬테그의 where을 여기다 적어준다.
+          // include한얘에서 조건을 적용할 수 있다.
+          // 그러면 위의 것들 where 조건도 적용되고 여기 where도 동시에 만족하는 얘가 선택된다 (hashtag 검색)
+          // 유저의 게시글 검색, 해쉬태그 검색어 게시글 검색어도 될 수 있다.
+          model: Hashtag,
+          where: { name: decodeURIComponent(req.params.hashtag) },
+        },
         {
           // 정보를 가져올 때는 항상 완성을 해서 가져와야 한다. (작성자 정보도 같이 다 넣어서)
           model: User,
@@ -64,20 +67,8 @@ router.get('/', async (req, res, next) => {
           ],
         },
       ],
-      // offset: 0, // 원하는 구간만 가져온다 ex) 0 ~ 10 게시글 가져와라 100이면 101 ~ 110
-      // 실무에선 Limit과 offset을 잘 사용하지 않는다.
-      // 단점 : 중간에 사람이 게시글 지우거나 추가한다고 가정하면 (id가 높을수록 최신)
-      // 21, 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1
-      // 20 ~ 11 까지 가져왔는데 사람이 로딩중에 게시글 1개를 생성해버리면
-      // offset과 Limit이 꼬인다. offset : 10으로 바뀌면 10개를 건너뛰어서 12까지 건너뛰고 11부터 2까지 추가로 가져온다
-      // 그래서 offset은 추가 삭제시 문제 발생해서 lastId로 많이 쓰인다.
-      // where { id: lastId } 적용하면 Limit: 10 이고 lastId가 11되니까 그 다음 꺼 부터 10개 가져온다.
-
-      // 게시판같은 경우 틀이 고정이 되어있기때문에 offset Limit 적용해도 문제는 없지만,
-      // 베스트는 lastId로 페이지 네이션 구현할 때 (인피니트 스크롤링, 게시판 등) lastId Limit 방식
     });
 
-    // console.log(posts);
     res.status(200).json(posts);
   } catch (error) {
     console.error;

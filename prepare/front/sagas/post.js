@@ -30,6 +30,12 @@ import {
   LOAD_POST_REQUEST,
   LOAD_POST_SUCCESS,
   LOAD_POST_FAILURE,
+  LOAD_USER_POSTS_REQUEST,
+  LOAD_HASHTAG_POSTS_REQUEST,
+  LOAD_HASHTAG_POSTS_SUCCESS,
+  LOAD_HASHTAG_POSTS_FAILURE,
+  LOAD_USER_POSTS_SUCCESS,
+  LOAD_USER_POSTS_FAILURE,
   // generateDummyPost,
 } from '../reducers/post';
 import { ADD_POST_TO_ME, REMOVE_POST_OF_ME } from '../reducers/user';
@@ -133,6 +139,58 @@ function* loadPost(action) {
     console.error(err);
     yield put({
       type: LOAD_POST_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+function loadHashtagPostsAPI(data, lastId) {
+  // 에러 발생 : Request path contains unescaped characters
+  // 원인 : 해쉬링크가 한글이나 특수문자
+  // 해결 : encodeURIComponent 감싸준다
+  // encodeURIComponent : ex) 리액트 -> R%%#$)kdsakeqwe@#@#4
+  // decodeURIComponent : ex ) R%%#$)kdsakeqwe@#@#4 -> 리액트
+  // decodeURIComponent를 back/router/hashtag의 where에도 넣어줘야한다.
+
+  return axios.get(`/hashtag/${encodeURIComponent(data)}?lastId=${lastId || 0}`); //get은 두번 째자리는 WithCredentials 이기 때문에 data 넣을 자리가 없어서 쿼리스트링 방식으로 ?key=${값} (주소의 데이터가 포함)
+  // 장점이 주소만를 캐싱하면 데이터까지 캐싱이 된다. post나 put patch는 데이터 캐싱이 안되는데 get만의 이점이 data까지 캐싱할 수 있다.
+}
+
+function* loadHashtagPosts(action) {
+  try {
+    console.log('LoadHashtag console');
+    const result = yield call(loadHashtagPostsAPI, action.data, action.lastId);
+    // yield delay(1000);
+    yield put({
+      type: LOAD_HASHTAG_POSTS_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: LOAD_HASHTAG_POSTS_FAILURE,
+      error: err.response.data,
+    });
+  }
+}
+
+function loadUserPostsAPI(data, lastId) {
+  return axios.get(`/user/${data}/posts?lastId=${lastId || 0}`); //get은 두번 째자리는 WithCredentials 이기 때문에 data 넣을 자리가 없어서 쿼리스트링 방식으로 ?key=${값} (주소의 데이터가 포함)
+  // 장점이 주소만를 캐싱하면 데이터까지 캐싱이 된다. post나 put patch는 데이터 캐싱이 안되는데 get만의 이점이 data까지 캐싱할 수 있다.
+}
+
+function* loadUserPosts(action) {
+  try {
+    const result = yield call(loadUserPostsAPI, action.data, action.lastId);
+    // yield delay(1000);
+    yield put({
+      type: LOAD_USER_POSTS_SUCCESS,
+      data: result.data,
+    });
+  } catch (err) {
+    console.error(err);
+    yield put({
+      type: LOAD_USER_POSTS_FAILURE,
       error: err.response.data,
     });
   }
@@ -257,6 +315,14 @@ function* watchLoadPost() {
   yield takeLatest(LOAD_POST_REQUEST, loadPost);
 }
 
+function* watchLoadUserPosts() {
+  yield throttle(5000, LOAD_USER_POSTS_REQUEST, loadUserPosts);
+}
+
+function* watchLoadHashtagPosts() {
+  yield throttle(5000, LOAD_HASHTAG_POSTS_REQUEST, loadHashtagPosts);
+}
+
 function* watchLoadPosts() {
   yield throttle(5000, LOAD_POSTS_REQUEST, loadPosts);
 }
@@ -280,6 +346,8 @@ export default function* postSaga() {
     fork(watchLikePost),
     fork(watchUnlikePost),
     fork(watchAddPost),
+    fork(watchLoadUserPosts),
+    fork(watchLoadHashtagPosts),
     fork(watchLoadPost),
     fork(watchLoadPosts),
     fork(watchRemovePost),
