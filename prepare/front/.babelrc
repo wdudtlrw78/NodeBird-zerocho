@@ -1,4 +1,5 @@
 // Next도 내부적으로 webpack이 돌아가지만 일부분 커스텀마이징도 할 수 있다.
+// babel 구성 옵션
 {
   "presets": ["next/babel"],
   "plugins": [

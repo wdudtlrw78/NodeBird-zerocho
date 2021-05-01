@@ -33,13 +33,13 @@ export const initialState = {
   changeNicknameDone: false,
   changeNicknameError: null,
 
-  loadFollowingsLoading: false, // 팔로잉 가져오기 시도중
-  loadFollowingsDone: false,
-  loadFollowingsError: null,
+  // loadFollowingsLoading: false, // 팔로잉 가져오기 시도중
+  // loadFollowingsDone: false,
+  // loadFollowingsError: null,
 
-  loadFollowersLoading: false, // 팔로워 가져오기 시도중
-  loadFollowersDone: false,
-  loadFollowersError: null,
+  // loadFollowersLoading: false, // 팔로워 가져오기 시도중
+  // loadFollowersDone: false,
+  // loadFollowersError: null,
 
   removeFollowerLoading: false, // 팔로워 제거
   removeFollowerDone: false,
@@ -87,13 +87,13 @@ export const REMOVE_FOLLOWER_REQUEST = 'REMOVE_FOLLOWER_REQUEST';
 export const REMOVE_FOLLOWER_SUCCESS = 'REMOVE_FOLLOWER_SUCCESS';
 export const REMOVE_FOLLOWER_FAILURE = 'REMOVE_FOLLOWER_FAILURE';
 
-export const LOAD_FOLLOWINGS_REQUEST = 'LOAD_FOLLOWINGS_REQUEST';
-export const LOAD_FOLLOWINGS_SUCCESS = 'LOAD_FOLLOWINGS_SUCCESS';
-export const LOAD_FOLLOWINGS_FAILURE = 'LOAD_FOLLOWINGS_FAILURE';
+// export const LOAD_FOLLOWINGS_REQUEST = 'LOAD_FOLLOWINGS_REQUEST';
+// export const LOAD_FOLLOWINGS_SUCCESS = 'LOAD_FOLLOWINGS_SUCCESS';
+// export const LOAD_FOLLOWINGS_FAILURE = 'LOAD_FOLLOWINGS_FAILURE';
 
-export const LOAD_FOLLOWERS_REQUEST = 'LOAD_FOLLOWERS_REQUEST';
-export const LOAD_FOLLOWERS_SUCCESS = 'LOAD_FOLLOWERS_SUCCESS';
-export const LOAD_FOLLOWERS_FAILURE = 'LOAD_FOLLOWERS_FAILURE';
+// export const LOAD_FOLLOWERS_REQUEST = 'LOAD_FOLLOWERS_REQUEST';
+// export const LOAD_FOLLOWERS_SUCCESS = 'LOAD_FOLLOWERS_SUCCESS';
+// export const LOAD_FOLLOWERS_FAILURE = 'LOAD_FOLLOWERS_FAILURE';
 
 // 게시글은 포스트 리듀서 나에 대한 정보는 유저 리듀서에 있는데 문제가
 // 포스트 리듀서에 만약 내가 글을 쓰고 추가가 되면
@@ -150,48 +150,48 @@ export const logoutRequestAction = () => ({
 const reducer = (state = initialState, action) =>
   produce(state, (draft) => {
     switch (action.type) {
-      case REMOVE_FOLLOWER_REQUEST:
-        draft.removeFoloowerLoading = true;
-        draft.removeFoloowerError = null;
-        draft.removeFoloowerDone = false;
-        break;
-      case REMOVE_FOLLOWER_SUCCESS:
-        draft.removeFoloowerLoading = false;
-        draft.me.Followers = draft.me.Followers.filter((v) => v.id !== action.data.UserId);
-        draft.removeFoloowerDone = true;
-        break;
-      case REMOVE_FOLLOWER_FAILURE:
-        draft.removeFoloowerLoading = false;
-        draft.removeFoloowerError = action.error;
-        break;
-      case LOAD_FOLLOWINGS_REQUEST:
-        draft.loadFollowingsLoading = true;
-        draft.loadFollowingsError = null;
-        draft.loadFollowingsDone = false;
-        break;
-      case LOAD_FOLLOWINGS_SUCCESS:
-        draft.loadFollowingsLoading = false;
-        draft.me.Followings = action.data;
-        draft.loadFollowingsDone = true;
-        break;
-      case LOAD_FOLLOWINGS_FAILURE:
-        draft.loadFollowingsLoading = false;
-        draft.loadFollowingsError = action.error;
-        break;
-      case LOAD_FOLLOWERS_REQUEST:
-        draft.loadFollowersLoading = true;
-        draft.loadFollowersError = null;
-        draft.loadFollowersDone = false;
-        break;
-      case LOAD_FOLLOWERS_SUCCESS:
-        draft.loadFollowersLoading = false;
-        draft.me.Followers = action.data;
-        draft.loadFollowersDone = true;
-        break;
-      case LOAD_FOLLOWERS_FAILURE:
-        draft.loadFollowersLoading = false;
-        draft.loadFollowersError = action.error;
-        break;
+      // case REMOVE_FOLLOWER_REQUEST:
+      //   draft.removeFoloowerLoading = true;
+      //   draft.removeFoloowerError = null;
+      //   draft.removeFoloowerDone = false;
+      //   break;
+      // case REMOVE_FOLLOWER_SUCCESS:
+      //   draft.removeFoloowerLoading = false;
+      //   draft.me.Followers = draft.me.Followers.filter((v) => v.id !== action.data.UserId);
+      //   draft.removeFoloowerDone = true;
+      //   break;
+      // case REMOVE_FOLLOWER_FAILURE:
+      //   draft.removeFoloowerLoading = false;
+      //   draft.removeFoloowerError = action.error;
+      //   break;
+      // case LOAD_FOLLOWINGS_REQUEST:
+      //   draft.loadFollowingsLoading = true;
+      //   draft.loadFollowingsError = null;
+      //   draft.loadFollowingsDone = false;
+      //   break;
+      // case LOAD_FOLLOWINGS_SUCCESS:
+      //   draft.loadFollowingsLoading = false;
+      //   draft.me.Followings = action.data;
+      //   draft.loadFollowingsDone = true;
+      //   break;
+      // case LOAD_FOLLOWINGS_FAILURE:
+      //   draft.loadFollowingsLoading = false;
+      //   draft.loadFollowingsError = action.error;
+      //   break;
+      // case LOAD_FOLLOWERS_REQUEST:
+      //   draft.loadFollowersLoading = true;
+      //   draft.loadFollowersError = null;
+      //   draft.loadFollowersDone = false;
+      //   break;
+      // case LOAD_FOLLOWERS_SUCCESS:
+      //   draft.loadFollowersLoading = false;
+      //   draft.me.Followers = action.data;
+      //   draft.loadFollowersDone = true;
+      //   break;
+      // case LOAD_FOLLOWERS_FAILURE:
+      //   draft.loadFollowersLoading = false;
+      //   draft.loadFollowersError = action.error;
+      //   break;
       case LOAD_MY_INFO_REQUEST:
         draft.loadMyInfoLoading = true;
         draft.loadMyInfoError = null;

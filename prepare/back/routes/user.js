@@ -54,121 +54,6 @@ router.get('/', async (req, res, next) => {
   }
 });
 
-// 남의정보 가져오기
-router.get('/:userId', async (req, res, next) => {
-  // GET /user/1
-  try {
-    const fullUserWithoutPassword = await User.findOne({
-      where: { id: req.params.userId },
-      attributes: {
-        // attributes: [], // 원하는 정보만 받기
-        exclude: ['password'], // 전체 데이터중에 password만 빼고 가져오겠다.
-      },
-      include: [
-        {
-          // hasMany라서 복수형 me.Posts
-          model: Post,
-
-          // me data
-          // 숫자 갯수만 알아내면 되기 때문에 id만 가져오면 length 길이로 몇 개, 몇 명인지 알 수 있고 나머지 불필요한 데이터들은 안받을 수 있다.
-          // 만약 팔로워 팔로잉이 수백만명이고 데이터에 전부 가득 차있으면 용량차고 모바일 시 느려지는 현상 방지
-          attributes: ['id'],
-        },
-        {
-          model: User,
-          as: 'Followings',
-          attributes: ['id'],
-        },
-        {
-          model: User,
-          as: 'Followers',
-          attributes: ['id'],
-        },
-      ],
-    });
-    if (fullUserWithoutPassword) {
-      // 시퀄라이즈에서 불러온 data는 JSON이 아니라서 JSON으로 데이터 형식으로 변경
-      const data = fullUserWithoutPassword.toJSON();
-      // about.js
-      // length로 덧붙여 넣어야지 id들이 안들어있어서 보안에 안정적이다. (개인정보 침해예방)
-      data.Posts = data.Posts.length;
-      data.Followers = data.Followers.length;
-      data.Followings = data.Followings.length;
-      res.status(200).json(data);
-    } else {
-      res.status(404).json('존재하지 않는 사용자입니다.');
-    }
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-});
-
-router.get('/:userId/posts', async (req, res, next) => {
-  //GET /user/1/posts
-  try {
-    const where = { UserId: req.params.userId };
-    if (parseInt(req.query.lastId, 10)) {
-      // 페이지 네이션
-      // 초기 로딩이 아닐 때
-      // lastId 다음 꺼 불러와야한다.
-      where.id = { [Op.lt]: parseInt(req.query.lastId, 10) }; // lastId 보다 작은 id 10개를 불러와라(op)
-      // Op = operator
-      // 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1
-    }
-    const posts = await Post.findAll({
-      where,
-      limit: 10, // 10개만 가져와라 (ex 스크롤 내리면 10개 씩)
-
-      // 댓글 정렬: order / DESC : 내림차순
-      order: [['createdAt', 'DESC']],
-      include: [
-        {
-          // 정보를 가져올 때는 항상 완성을 해서 가져와야 한다. (작성자 정보도 같이 다 넣어서)
-          model: User,
-          attributes: ['id', 'nickname'], // include의 User는 비밀번호는 빼야한다. (보안)
-        },
-        {
-          model: Image,
-        },
-        {
-          model: Comment,
-          include: [
-            {
-              // 댓글의 작성자
-              model: User,
-              attributes: ['id', 'nickname'],
-            },
-          ],
-        },
-        {
-          model: User, // 좋아요 누른 유저
-          as: 'Likers',
-          attributes: ['id'],
-        },
-        {
-          model: Post, // 리트윗 게시물
-          as: 'Retweet',
-          include: [
-            {
-              model: User,
-              attributes: ['id', 'nickname'],
-            },
-            {
-              model: Image,
-            },
-          ],
-        },
-      ],
-    });
-
-    res.status(200).json(posts);
-  } catch (error) {
-    console.error;
-    next(error);
-  }
-});
-
 //로그인 POST / user /login
 // passport 전략 실행
 // passport는 사용방법이 다르다 원래는 req, res, next가 없는 미들웨어인데 미들웨어를 확장한다(express 기법중 하나).
@@ -310,6 +195,155 @@ router.patch('/nickname', isLoggedIn, async (req, res, next) => {
   }
 });
 
+router.get('/followers', isLoggedIn, async (req, res, next) => {
+  // GET /user/1/followers
+  try {
+    const user = await User.findOne({ where: { id: req.user.id } }); // 나를 먼저 찾고
+    if (!user) {
+      res.status(403).send('존재하지 않는 사용자 입니다');
+    }
+    const followers = await user.getFollowers({
+      limit: parseInt(req.query.limit, 10), // limit만큼 가져온다 -> profile의 swr
+    }); // // 팔로워 목록 가지고 온다.
+    res.status(200).json(followers); // action.data부분 / 상대방 ID
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+router.get('/followings', isLoggedIn, async (req, res, next) => {
+  // GET /user/1/followings
+  try {
+    const user = await User.findOne({ where: { id: req.user.id } }); // 나를 먼저 찾고
+    if (!user) {
+      res.status(403).send('존재하지 않는 사용자 입니다');
+    }
+    const followings = await user.getFollowings({
+      limit: parseInt(req.query.limit, 10), // limit만큼 가져온다 -> profile의 swr
+    }); // // 팔로잉 목록 가지고 온다.
+    res.status(200).json(followings); // action.data부분 / 상대방 ID
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+// 남의정보 가져오기
+router.get('/:userId', async (req, res, next) => {
+  // GET /user/1
+  try {
+    const fullUserWithoutPassword = await User.findOne({
+      where: { id: req.params.userId },
+      attributes: {
+        // attributes: [], // 원하는 정보만 받기
+        exclude: ['password'], // 전체 데이터중에 password만 빼고 가져오겠다.
+      },
+      include: [
+        {
+          // hasMany라서 복수형 me.Posts
+          model: Post,
+
+          // me data
+          // 숫자 갯수만 알아내면 되기 때문에 id만 가져오면 length 길이로 몇 개, 몇 명인지 알 수 있고 나머지 불필요한 데이터들은 안받을 수 있다.
+          // 만약 팔로워 팔로잉이 수백만명이고 데이터에 전부 가득 차있으면 용량차고 모바일 시 느려지는 현상 방지
+          attributes: ['id'],
+        },
+        {
+          model: User,
+          as: 'Followings',
+          attributes: ['id'],
+        },
+        {
+          model: User,
+          as: 'Followers',
+          attributes: ['id'],
+        },
+      ],
+    });
+    if (fullUserWithoutPassword) {
+      // 시퀄라이즈에서 불러온 data는 JSON이 아니라서 JSON으로 데이터 형식으로 변경
+      const data = fullUserWithoutPassword.toJSON();
+      // about.js
+      // length로 덧붙여 넣어야지 id들이 안들어있어서 보안에 안정적이다. (개인정보 침해예방)
+      data.Posts = data.Posts.length;
+      data.Followers = data.Followers.length;
+      data.Followings = data.Followings.length;
+      res.status(200).json(data);
+    } else {
+      res.status(404).json('존재하지 않는 사용자입니다.');
+    }
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+router.get('/:userId/posts', async (req, res, next) => {
+  //GET /user/1/posts
+  try {
+    const where = { UserId: req.params.userId };
+    if (parseInt(req.query.lastId, 10)) {
+      // 페이지 네이션
+      // 초기 로딩이 아닐 때
+      // lastId 다음 꺼 불러와야한다.
+      where.id = { [Op.lt]: parseInt(req.query.lastId, 10) }; // lastId 보다 작은 id 10개를 불러와라(op)
+      // Op = operator
+      // 21 20 19 18 17 16 15 14 13 12 11 10 9 8 7 6 5 4 3 2 1
+    }
+    const posts = await Post.findAll({
+      where,
+      limit: 10, // 10개만 가져와라 (ex 스크롤 내리면 10개 씩)
+
+      // 댓글 정렬: order / DESC : 내림차순
+      order: [['createdAt', 'DESC']],
+      include: [
+        {
+          // 정보를 가져올 때는 항상 완성을 해서 가져와야 한다. (작성자 정보도 같이 다 넣어서)
+          model: User,
+          attributes: ['id', 'nickname'], // include의 User는 비밀번호는 빼야한다. (보안)
+        },
+        {
+          model: Image,
+        },
+        {
+          model: Comment,
+          include: [
+            {
+              // 댓글의 작성자
+              model: User,
+              attributes: ['id', 'nickname'],
+            },
+          ],
+        },
+        {
+          model: User, // 좋아요 누른 유저
+          as: 'Likers',
+          attributes: ['id'],
+        },
+        {
+          model: Post, // 리트윗 게시물
+          as: 'Retweet',
+          include: [
+            {
+              model: User,
+              attributes: ['id', 'nickname'],
+            },
+            {
+              model: Image,
+            },
+          ],
+        },
+      ],
+    });
+
+    res.status(200).json(posts);
+  } catch (error) {
+    console.error;
+    next(error);
+  }
+});
+
 router.patch('/:userId/follow', isLoggedIn, async (req, res, next) => {
   // PATCH /user/1/follow
   try {
@@ -355,34 +389,10 @@ router.delete('/follower/:userId', isLoggedIn, async (req, res, next) => {
   }
 });
 
-router.get('/followers', isLoggedIn, async (req, res, next) => {
-  // GET /user/1/followers
-  try {
-    const user = await User.findOne({ where: { id: req.user.id } }); // 나를 먼저 찾고
-    if (!user) {
-      res.status(403).send('존재하지 않는 사용자 입니다');
-    }
-    const followers = await user.getFollowers(); // // 팔로워 목록 가지고 온다.
-    res.status(200).json(followers); // action.data부분 / 상대방 ID
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-});
-
-router.get('/followings', isLoggedIn, async (req, res, next) => {
-  // GET /user/1/followings
-  try {
-    const user = await User.findOne({ where: { id: req.user.id } }); // 나를 먼저 찾고
-    if (!user) {
-      res.status(403).send('존재하지 않는 사용자 입니다');
-    }
-    const followings = await user.getFollowings(); // // 팔로잉 목록 가지고 온다.
-    res.status(200).json(followings); // action.data부분 / 상대방 ID
-  } catch (error) {
-    console.error(error);
-    next(error);
-  }
-});
-
 module.exports = router;
+
+// 중요!!
+// 에러발생 followers, followings GET 404 에러
+// 원인 : 미들웨어(라우터도 미들웨어)는 위에서 부터 아래로 왼쪽도 오른쪽으로 실행된다.
+// User foillowings가 있으면 걸린다. 해서 router.get('/:userId')에서 먼저 걸린다. 와일드 카드 /: 이 부분을 와일드 카드 or params라고 불린다.
+// params or 와일드카드 부분은 맨 아래에 적어야 한다.
