@@ -5,11 +5,17 @@ import { RetweetOutlined, HeartOutlined, MessageOutlined, EllipsisOutlined, Hear
 import { useDispatch, useSelector } from 'react-redux';
 
 import Link from 'next/link';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+
 import PostImages from './PostImages';
 import CommentForm from './CommentForm';
 import PostCardContent from './PostCardContent';
 import { LIKE_POST_REQUEST, REMOVE_POST_REQUEST, UNLIKE_POST_REQUEST, RETWEET_REQUEST } from '../reducers/post';
 import FollowButton from './FollowButton';
+
+dayjs.locale('ko');
+dayjs.extend(relativeTime);
 
 const PostCard = ({ post }) => {
   const dispatch = useDispatch();
@@ -110,6 +116,7 @@ const PostCard = ({ post }) => {
         {/* 지금 post가 리트윗 post이면 RetweetId가 있을거고 Retweet 객체도 있을 것이다. */}
         {post.RetweetId && post.Retweet ? (
           <Card cover={post.Retweet.Images[0] && <PostImages images={post.Retweet.Images} />}>
+            <div style={{ float: 'right' }}>{dayjs(post.createdAt).format('YYYY.MM.DD')}</div>
             <Card.Meta
               avatar={
                 <Link href={`/user/${post.Retweet.User.id}`}>
@@ -123,17 +130,20 @@ const PostCard = ({ post }) => {
             />
           </Card>
         ) : (
-          <Card.Meta
-            avatar={
-              <Link href={`/user/${post.User.id}`}>
-                <a>
-                  <Avatar>{post.User.nickname[0]}</Avatar>
-                </a>
-              </Link>
-            }
-            title={post.User.nickname}
-            description={<PostCardContent postData={post.content} />}
-          />
+          <>
+            <div style={{ float: 'right' }}>{dayjs(post.createdAt).fromNow()}</div>
+            <Card.Meta
+              avatar={
+                <Link href={`/user/${post.User.id}`}>
+                  <a>
+                    <Avatar>{post.User.nickname[0]}</Avatar>
+                  </a>
+                </Link>
+              }
+              title={post.User.nickname}
+              description={<PostCardContent postData={post.content} />}
+            />
+          </>
         )}
       </Card>
       {CommentFormOpend && (

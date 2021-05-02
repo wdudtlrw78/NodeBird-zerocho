@@ -384,5 +384,34 @@ app.use(
 - 애초부터 브라우저 접속해서 서버로부터 데이터를 받아올 때 부터 로그인되게 하려면 서버사이드렌더링이 필요하다
 - 현재 클라이언트 서버 렌더링 (NEXT에다가 SSR 미적용 상태)
 
-## Next.js 서버사이드렌더링
+## Next 빌드하기
 
+- 개발 과정을 거치면서 redux-devtool, hot-reloader 연결 및 Next가 즉석으로 코드 스플릿팅 해주는 것들을 미리 준비하는 빌드 과정이 필요하다.
+- 빌드를 하면 HTML, CSS, JS 결과물이 나온다.
+- 결과물을 가지고 웹 서버에 올려두면 결과물들이 실제 사용자 브라우저로 전달되는 과정을 거친다.
+- 개발 서버는 느리기 때문에 개발에 필요한 것들은 전부 없애버리고 실제 필요한 것들만 남겨놓는다.
+  - 용량 줄어들고, 속도 개선
+- 터미널에서 `npm run build`
+- 코드 변경 후 깃헙에다가 push하면 CI/CD 도구가 있는데 CI/CD는 코드에 대한 테스트도 해주고 빌드 같은것도 해준다. 중간에 에러들이있으면 알림도 해준다.
+- 빌드나 테스트 해주는 CI/CD툴을 깃헙이랑 연결해놔서 깃헙에다가 push를 하면 알아서 CI/CD툴 돌아가고 빌드랑 테스트 전부 통과하면 아마존 웹 서비스 서버로 배포해주는 중간다리 역할을 해주는 것이 CI/CD툴이다.
+  - ci/cd tool : jenkins, circle ci, travis ci 등이 있다.
+- `npm run build`이 끝나면 각 페이지마다 총 용량이 1MB 정도만 안넘으면 한국 서비스 할 수 있다. 만약 그 이상이면 코드 스플릿팅 적용해서 `react.lazy` 또는 `suspense`가 있는데 그 기능으로 용량을 잘게잘게 쪼개주는 것이 좋다.
+- λ(lamda) : getServerSideProps 있는 것들
+- ● : getStaticProps 있는 것들
+- λ(lamda) 랑 ● 있는 것들은 서버사이드 렌더링을 한 번씩 하는 것이다.
+  - ●는 미리 HTML로 만들어져 있다. getStaticProps 쓰는 것들은 즉석에서 서버사이드 렌더링하는 것이 아니고 HTML을 미리 만들어 놓으려고 하는 것이다.
+- ○ /404(존재하지 않는) 는 처음부터 서버쪽 상관없이 그냥 정적인 페이지 (처음부터 HTML)
+
+용량 분석하기
+
+- `npm i @next/bundle-anaylzer`
+
+Customizing The Error Page
+
+- 404 (존재하지 않는)
+  - https://nextjs.org/docs/advanced-features/custom-error-page#404-page
+- 500 (서버 에러)
+  - 개발모드 일 때는 에러 메세지가 빨갛게 뜨고 배포할 때는 보안에 위협되기 때문에 메시지대신 짤막하게 영어로 뜬다.
+  - https://nextjs.org/docs/advanced-features/custom-error-page#500-page
+  - 주의사항으로 에러 메시지는 안보여주는 것이 좋다. (보안 위협)
+  - 사용자들에게는 잠시 후에 시도해보세요나 고객센터에 문의하세요 등 넣는 것이 좋다.
