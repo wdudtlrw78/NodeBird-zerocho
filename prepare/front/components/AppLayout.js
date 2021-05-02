@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import Link from 'next/link';
 import { Input, Menu, Row, Col } from 'antd';
 import styled from 'styled-components';
 import { createGlobalStyle } from 'styled-components';
+import Router from 'next/router';
 import { useSelector } from 'react-redux';
 import UserProfile from './UserProfile';
 import LoginForm from './LoginForm';
+import useInput from '../hooks/useInput';
 
 // - xs : 모바일
 // - sm : 태블릿
@@ -40,6 +42,13 @@ const AppLayout = ({ children }) => {
   // 또는 구조분해 할당도 가능
   const { me } = useSelector((state) => state.user);
 
+  const [searchInput, onChangeSearchInput] = useInput('');
+
+  const onSearch = useCallback(() => {
+    // Enter키 를 누르면 onSearch 실행
+    Router.push(`/hashtag/${searchInput}`);
+  }, [searchInput]);
+
   return (
     <div>
       <Global />
@@ -55,7 +64,13 @@ const AppLayout = ({ children }) => {
           </Link>
         </Menu.Item>
         <Menu.Item>
-          <SearchInput enterButton style={{ verticalAlign: 'middle' }} />
+          <SearchInput
+            value={searchInput}
+            onChange={onChangeSearchInput}
+            onSearch={onSearch}
+            enterButton
+            style={{ verticalAlign: 'middle' }}
+          />
         </Menu.Item>
         <Menu.Item>
           <Link href="/signup">
