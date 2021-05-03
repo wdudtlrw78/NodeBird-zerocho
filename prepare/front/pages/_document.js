@@ -1,3 +1,5 @@
+// CSS SSR
+
 // _app.js 위에 있는 것이 _document.js
 // _app.js가 _document.js 로 감싸지면서 제일 위에있는 Html, head, body까지 수정할 수 있다.
 

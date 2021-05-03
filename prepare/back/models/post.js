@@ -1,22 +1,29 @@
 // 게시글 정보
 
-module.exports = (sequlize, DataTypes) => {
-  // 사용자 정보 저장
-  const Post = sequlize.define(
-    'Post',
-    {
-      content: {
-        type: DataTypes.TEXT,
-        allowNull: false,
-      },
-    },
-    {
-      charset: 'utf8mb4',
-      collate: 'utf8mb4_general_ci', // + mb4 = 이모티콘 저장
-    }
-  );
+const DataTypes = require('sequelize');
+const { Model } = DataTypes;
 
-  Post.associate = (db) => {
+module.exports = class Post extends Model {
+  static init(sequelize) {
+    return super.init(
+      {
+        // id가 기본적으로 들어있다.
+        content: {
+          type: DataTypes.TEXT,
+          allowNull: false,
+        },
+      },
+      {
+        modelName: 'Post',
+        tableName: 'posts',
+        charset: 'utf8mb4',
+        collate: 'utf8mb4_general_ci', // + mb4 = 이모티콘 저장
+        sequelize, // index.js / sequlize을 연결객체를 넣어준다.
+      }
+    );
+  }
+
+  static associate(db) {
     // 관계형 Method 제공 (공통) post.addUser , post.getUser, post.setUser, post.removeUser 유저 생성, 유저 가져오기, 유저 수정, 유저 제거
 
     db.Post.belongsTo(db.User); // 작성자한테 속해있다.
@@ -50,17 +57,16 @@ module.exports = (sequlize, DataTypes) => {
     // HashtagId  / PostId 짝지어 준다.
     // ex) 1 / 1   2 / 1   1 / 2  3 / 2
     // 왜냐하면 테이블이 있어야지 검색이 가능하기 때문에
-  };
-  return Post;
+  }
+
+  // 질문
+  // 초반에 시퀄라이즈로 post modeling 할 때
+  // 리트윗을
+  // db.Post.belongsTo(db.Post, { as: "Retweet" });
+  // 이렇게 작성 했었습니다.
+  // 그런데 리트윗의 경우 post와 post가 1:N 관계인데
+  // post.hasMany(db.Post)도 같이 추가해 줘야 하는거 아닌가요? 아니면 같은 모델끼리 1:N관계일 때는 belongsTo만 해줘도 괜찮은건가요?
+
+  // 답변
+  // 같은 모델끼리는 belongsTo만 해주시면 됩니다. 어떻게서든 모델들 간의 관계를 시퀄라이즈가 파악할수 있으면 됩니다. belongsTo는 필수이지만 hasMany나 hasOne은 필수가 아니라고 보시면 됩니다.
 };
-
-// 질문
-// 초반에 시퀄라이즈로 post modeling 할 때
-// 리트윗을
-// db.Post.belongsTo(db.Post, { as: "Retweet" });
-// 이렇게 작성 했었습니다.
-// 그런데 리트윗의 경우 post와 post가 1:N 관계인데
-// post.hasMany(db.Post)도 같이 추가해 줘야 하는거 아닌가요? 아니면 같은 모델끼리 1:N관계일 때는 belongsTo만 해줘도 괜찮은건가요?
-
-// 답변
-// 같은 모델끼리는 belongsTo만 해주시면 됩니다. 어떻게서든 모델들 간의 관계를 시퀄라이즈가 파악할수 있으면 됩니다. belongsTo는 필수이지만 hasMany나 hasOne은 필수가 아니라고 보시면 됩니다.

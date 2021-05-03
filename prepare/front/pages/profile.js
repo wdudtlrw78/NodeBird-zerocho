@@ -17,6 +17,13 @@ import wrapper from '../store/configuerStore';
 // useSWR('key', () => 값) 값에 더미데이터 넣으면 된다 (faker);
 // useSelector처럼 여러 컴포넌트 = const { data } = useSWR('키', fetcher) 만 넣으면 모든 컴포넌트에 공통으로 사용, 키가 같으면 같은 data이다.
 
+// 그리고 SWR은 서버사이드렌더링 가능하다.
+// https://github.com/vercel/swr#ssr-with-nextjs
+// 3번 째 인자 데이터 키를 initialData로 해서 넣어주면 된다.
+// initialData는 getServerSideProps 할 때 return을 해줄 수 있다.
+// return { props: { data: 123123 } }; data는 Profile = (data) props로 전달이 된다.
+// 전달받은 props를 fetcher 다음 3번째 인자에 data로 넣어주시면 swr로 ssr이 된다.
+
 // fetcher = 주소를 어떻게 가져올지에 대해 적기
 // fetcher는 유틸로 따로 만들어서 swr마다 공유해서 사용하시거나 개조해서 사용하면된다.
 const fetcher = (url) => axios.get(url, { withCredentials: true }).then((result) => result.data);
@@ -120,6 +127,8 @@ export const getServerSideProps = wrapper.getServerSideProps(async (context) => 
   context.store.dispatch(END);
   console.log('getServerSideProps end');
   await context.store.sagaTask.toPromise();
+
+  // return { props: { data: 123123 } }; data는 Profile = (data) props로 전달이 된다.
 });
 
 export default Profile;
