@@ -3,6 +3,10 @@
 // _app.js 위에 있는 것이 _document.js
 // _app.js가 _document.js 로 감싸지면서 제일 위에있는 Html, head, body까지 수정할 수 있다.
 
+// SSR 확인하는 방법은 일단 postman에서 send후 preview 보면 css 적용이 안될 것을 볼 수 있다.
+// 확인 하는방법은 크롬에서 F12 설정에서 밑에보면 Debugger에서 Disable JavaScript 체크 후 새로고침하면
+// 진짜로 서버에서 주는대로 HTML로만 받는데 style 적용이 되어있으면 SSR 적용 증거이다.
+
 import React from 'react';
 import Document, { Html, Head, Main, NextScript } from 'next/document';
 import { ServerStyleSheet } from 'styled-components';
