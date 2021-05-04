@@ -142,7 +142,7 @@ router.post('/images', isLoggedIn, upload.array('image'), (req, res, next) => {
   console.log(req.files); // 업로드 된 이미지의 정보
   // 실습 : v.filename
   // S3(배포) : v.location
-  res.json(req.files.map((v) => v.location)); // 프론트로 업로드 정보 넘겨준다.
+  res.json(req.files.map((v) => v.location.replace(/\/original\//, '/thumb/'))); // 프론트로 업로드 정보 넘겨준다. // original 폴더 가있으면 thumb로 변경 그래야지 원본대신에 리사이징된 이미지가 프론트 주소로 이동
   // 업로드 프로세스도 여러가지 방법이 있다.
   // 1번째
   // 브라우저에서 백엔드 서버에 폼 전송할 때 한 방에 전달 (멀티파트 방식 ex { content: '안녕' image:0101010102 })
