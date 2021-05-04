@@ -19,11 +19,10 @@ const configureStore = (context) => {
   // 일반 redux랑 비슷하다.
   console.log(context);
   const sagaMiddleware = createSagaMiddleware();
-  const middlewares = [sagaMiddleware, loggerMiddleware];
   const enhancer =
     process.env.NODE_ENV === 'production'
-      ? compose(applyMiddleware(...middlewares))
-      : composeWithDevTools(applyMiddleware(...middlewares));
+      ? compose(applyMiddleware(sagaMiddleware))
+      : composeWithDevTools(applyMiddleware(sagaMiddleware, loggerMiddleware));
 
   const store = createStore(reducer, enhancer);
   // store.dispatch({

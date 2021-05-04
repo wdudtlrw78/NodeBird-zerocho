@@ -9,7 +9,8 @@ const PostCardContent = ({ postData }) => (
     {postData.split(/(#[^\s#]+)/g).map((v) => {
       if (v.match(/(#[^\s#]+)/)) {
         return (
-          <Link href={`/hashtag/${v.slice(1)}`} key={v}>
+          // (NEXT) Link prefetch false 안해놓으면 원하지도 않는데 관련 정보들 미리 다 불러온다.
+          <Link href={`/hashtag/${v.slice(1)}`} prefetch={false} key={v}>
             <a>{v}</a>
           </Link>
         );

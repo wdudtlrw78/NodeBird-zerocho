@@ -39,7 +39,7 @@ import post from './post';
 const rootReducer = (state, action) => {
   switch (action.type) {
     case HYDRATE: // SSR 완료될 때 호출되는 액션
-      console.log('HYDRATE', action);
+      // console.log('HYDRATE', action); // 배포전 지우기
       return action.payload;
     default: {
       const combinedReducer = combineReducers({

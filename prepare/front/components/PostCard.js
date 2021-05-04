@@ -119,7 +119,8 @@ const PostCard = ({ post }) => {
             <div style={{ float: 'right' }}>{dayjs(post.createdAt).format('YYYY.MM.DD')}</div>
             <Card.Meta
               avatar={
-                <Link href={`/user/${post.Retweet.User.id}`}>
+                // (NEXT) Link prefetch false 안해놓으면 원하지도 않는데 관련 정보들 미리 다 불러온다.
+                <Link href={`/user/${post.Retweet.User.id}`} prefetch={false}>
                   <a>
                     <Avatar>{post.Retweet.User.nickname[0]}</Avatar>
                   </a>
@@ -134,7 +135,8 @@ const PostCard = ({ post }) => {
             <div style={{ float: 'right' }}>{dayjs(post.createdAt).fromNow()}</div>
             <Card.Meta
               avatar={
-                <Link href={`/user/${post.User.id}`}>
+                // (NEXT) Link prefetch false 안해놓으면 원하지도 않는데 관련 정보들 미리 다 불러온다.
+                <Link href={`/user/${post.User.id}`} prefetch={false}>
                   <a>
                     <Avatar>{post.User.nickname[0]}</Avatar>
                   </a>
@@ -160,7 +162,8 @@ const PostCard = ({ post }) => {
                 <Comment
                   author={item.User.nickname}
                   avatar={
-                    <Link href={`/user/${item.User.id}`}>
+                    // (NEXT) Link prefetch false 안해놓으면 원하지도 않는데 관련 정보들 미리 다 불러온다.
+                    <Link href={`/user/${item.User.id}`} prefetch={false}>
                       <a>
                         <Avatar>{item.User.nickname[0]}</Avatar>
                       </a>
