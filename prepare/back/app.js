@@ -34,16 +34,21 @@ if (process.env.NODE.ENV === 'production') {
   app.use(morgan('combined')); // 배포모드일 때는 좀더 log가 자세해져서 실제 접속자 ip도 알 수 있으며 디도스나 해킹시도 할 수 있으면 차단할 수 도있다.
   app.use(hpp()); // Node에서 production 서버일 때는 hpp 랑 helmet은 필수이다 (보안)
   app.use(helmet()); // npm i pm2 cross-env helmet hpp
+  app.use(
+    cors({
+      origin: 'http://nodemomobird.com', // * 대신 true설정하면 보낸 곳의 주소가 자동으로 들어가 편리
+      credentials: true, // 쿠키도 같이 전달
+    })
+  );
 } else {
   app.use(morgan('dev')); // 프론트에서 백엔드 요청 보낼 때 어떤 요청들 보냈는지 기록 (백엔드에서 디버깅하기 편리)
+  app.use(
+    cors({
+      origin: 'http://localhost:3060', // * 대신 true설정하면 보낸 곳의 주소가 자동으로 들어가 편리
+      credentials: true, // 쿠키도 같이 전달
+    })
+  );
 }
-
-app.use(
-  cors({
-    origin: ['http://localhost:3060', 'http://nodemomobird.com'], // * 대신 true설정하면 보낸 곳의 주소가 자동으로 들어가 편리
-    credentials: true, // 쿠키도 같이 전달
-  })
-);
 
 // static : 합쳐준다 - > __dirname: 현재 폴더 (back) + '/uploads' 대신 path.join으로 쓰인다. 맥이나 리눅스에서는 / 대신 \ 쓰여서 운영체제에따라 다르므로 운영체제에 맞게 자동으로 path.join 쓴다.
 // 첫번째 인자의 / 경로가 localhost:3065/ 가 된다. /images이면 localhost:3065/images 가 된다. -> postForm/img src 경로에 맞게 쓰면된다.
