@@ -40,7 +40,7 @@ if (process.env.NODE.ENV === 'production') {
 
 app.use(
   cors({
-    origin: ['http://localhost:3060', 'nodebird.com', 'http://13.124.41.170'], // * 대신 true설정하면 보낸 곳의 주소가 자동으로 들어가 편리
+    origin: ['http://localhost:3060'], // * 대신 true설정하면 보낸 곳의 주소가 자동으로 들어가 편리
     credentials: true, // 쿠키도 같이 전달
   })
 );
@@ -103,6 +103,6 @@ app.use('/hashtag', hashtagRouter); // hashtag 가져오기
 // next(err) 정보 자체가 모두 에러 처리 미들웨어로 넘어가고 전부다 프론트서버로 넘어가기 때문에 그 기본 역할을 바꾸고싶으면 커스텀한다.
 // })
 
-app.listen(80, () => {
+app.listen(3065, () => {
   console.log('서버 실행 중!');
 });
