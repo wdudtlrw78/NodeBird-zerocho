@@ -2,6 +2,8 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs'); // 파일 시스템 조작
+const multerS3 = require('multer-s3');
+const AWS = require('aws-sdk');
 
 // 게시글 작성, 댓글 작성하는 것도 로그인 여부 파악해야한다.
 const { isLoggedIn } = require('./middlewares');
@@ -17,18 +19,34 @@ try {
   fs.mkdirSync('uploads');
 }
 
+AWS.config.update({
+  accessKeyId: process.env.S3_ACCESS_KEY_ID,
+  secretAccessKey: process.env.S3_SECRET_ACCESS_KEY,
+  region: 'ap-northeast-2',
+});
 const upload = multer({
-  storage: multer.diskStorage({
-    // storage : 저장할 장소 diskStorage 하드디스크 (실습) -> 나중에는 배포하면서 아마존 웹 서비스 S3 클라우드에 저장 왜나하면 컴퓨터 하드디스크에 저장하면
-    // 나중에 백엔드 서버가 요청 많이 받으면 서버 스케일링 해줘야하는데(같은 서버를 여러 대 복사) 컴퓨터 uploads 폴더에 넣어두면 복사를 할 때마다 이미지가 같이 복사되서 넘어가기 때문에 (용량이 크고 복사하면 쓸 때없는 공간 차지)
-    destination(req, file, done) {
-      done(null, 'uploads');
-    },
-    filename(req, file, done) {
-      // 모모.png
-      const ext = path.extname(file.originalname); // 확장자 추출(.png)
-      const basename = path.basename(file.originalname, ext); // 모모
-      done(null, basename + '_' + new Date().getTime() + ext); // 모모151841236.png
+  // storage : 저장할 장소 diskStorage 하드디스크 (실습) -> 나중에는 배포하면서 아마존 웹 서비스 S3 클라우드에 저장 왜나하면 컴퓨터 하드디스크에 저장하면
+  // 나중에 백엔드 서버가 요청 많이 받으면 서버 스케일링 해줘야하는데(같은 서버를 여러 대 복사) 컴퓨터 uploads 폴더에 넣어두면 복사를 할 때마다 이미지가 같이 복사되서 넘어가기 때문에 (용량이 크고 복사하면 쓸 때없는 공간 차지)
+
+  // 실습
+  // storage: multer.diskStorage({
+  //   destination(req, file, done) {
+  //     done(null, 'uploads');
+  //   },
+  //   filename(req, file, done) {
+  //     // 모모.png
+  //     const ext = path.extname(file.originalname); // 확장자 추출(.png)
+  //     const basename = path.basename(file.originalname, ext); // 모모
+  //     done(null, basename + '_' + new Date().getTime() + ext); // 모모151841236.png
+  //   },
+  // }),
+
+  // 배포
+  storage: multerS3({
+    s3: new AWS.S3(),
+    bucket: 'react-nodemomobird-s3',
+    key(req, file, cb) {
+      cb(null, `original/${Date.now()}_${path.basename(file.originalname)}`);
     },
   }),
   limits: { fileSize: 20 * 1024 * 1024 }, // 20MB
@@ -122,7 +140,9 @@ router.post('/images', isLoggedIn, upload.array('image'), (req, res, next) => {
   // upload.array('image') = postForm의 input에 전달 된다. array인 이유는 이미지를 여러장 올릴 수 있어서 한 장이면 single TEXT(json) 있을 때는 none()
   // POST /post/images
   console.log(req.files); // 업로드 된 이미지의 정보
-  res.json(req.files.map((v) => v.filename)); // 프론트로 업로드 정보 넘겨준다.
+  // 실습 : v.filename
+  // S3(배포) : v.location
+  res.json(req.files.map((v) => v.location)); // 프론트로 업로드 정보 넘겨준다.
   // 업로드 프로세스도 여러가지 방법이 있다.
   // 1번째
   // 브라우저에서 백엔드 서버에 폼 전송할 때 한 방에 전달 (멀티파트 방식 ex { content: '안녕' image:0101010102 })
