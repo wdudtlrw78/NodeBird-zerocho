@@ -40,7 +40,7 @@ if (process.env.NODE.ENV === 'production') {
 
 app.use(
   cors({
-    origin: ['http://localhost:3060', 'nodebird.com', 'http://52.78.162.97'], // * 대신 true설정하면 보낸 곳의 주소가 자동으로 들어가 편리
+    origin: ['http://localhost:3060', 'http://nodemomobird.com'], // * 대신 true설정하면 보낸 곳의 주소가 자동으로 들어가 편리
     credentials: true, // 쿠키도 같이 전달
   })
 );
@@ -80,6 +80,11 @@ app.use(
     // secret이 해킹당하면 데이터가 노출될 수 있다. nodebirdsecret 키를 알면 정보들이 노출되기 떄문에 꽁꽁 숨겨놔야한다.
     // dotenv : 소스코드에 secret이 있으면 만약 소스코드가 해커에게 털렸다고 가정하면 그러면 비밀번호까지 다 노출된다.
     // 특히 config 파일에서 db 정보도 다 날라가기 때문에 이런것들은 따로 관리한다. (.env) npm i dotenv
+    cookie: {
+      httpOnly: true,
+      secure: false,
+      domain: process.env.NODE_ENV === 'production' && '.nodemomobird.com',
+    },
   })
 );
 app.use(passport.initialize());
