@@ -1,4 +1,4 @@
-// larmda는 알아서 사용자 정보들을 가져오기 때문에 Key를 안넣어줘도 된다.
+// lambda는 알아서 사용자 정보들을 가져오기 때문에 Key를 안넣어줘도 된다.
 // sharp, aws-sdk 공식문서 참고
 
 const AWS = require('aws-sdk');
