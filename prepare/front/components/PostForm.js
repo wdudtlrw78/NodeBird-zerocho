@@ -98,7 +98,7 @@ const PostForm = () => {
         {imagePaths.map((v, i) => (
           <div key={v} style={{ display: 'inline-block' }}>
             {/* imges를 S3에 올리면 localhost:3060 or backUrl에 저장되는 것이 아니라 따로 S3용 이미지 주소가 생긴다. back/route/images v.location 에 들어있다*/}
-            <img src={v} style={{ width: '200px' }} alt={v} />
+            <img src={v.replace(/\/thumb\//, '/original/')} style={{ width: '200px' }} alt={v} />
             <div>
               <Button onClick={onRemoveImage(i)}>제거</Button>
             </div>
