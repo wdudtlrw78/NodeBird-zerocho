@@ -19,7 +19,7 @@ const User = () => {
   // 특정 사용자 id를 받는다.
   const { id } = router.query;
   const { mainPosts, hasMorePosts, loadPostsLoading } = useSelector((state) => state.post);
-  const { userInfo } = useSelector((state) => state.user);
+  const { userInfo, me } = useSelector((state) => state.user);
 
   useEffect(() => {
     const onScroll = () => {
@@ -58,8 +58,10 @@ const User = () => {
           <meta property="og:url" content={`https://nodebird.com/user/${id}`} />
         </Head>
       )}
-      {userInfo ? (
+      {/* 나의 게시글인경우 null(안뜨게) */}
+      {userInfo && userInfo.id !== me?.id ? (
         <Card
+          style={{ marginBottom: 20 }}
           actions={[
             <div key="twit">
               짹짹

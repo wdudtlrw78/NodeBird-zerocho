@@ -31,6 +31,10 @@ db.sequelize
 passportConfig();
 
 if (process.env.NODE.ENV === 'production') {
+  // 배포일 때 우분투에서 원격 추가 (nginx revers proxy 쓰기 때문에)
+  // nginx revers proxy는 강의 설명 초반 확인
+  // app.set('trust proxy', 1);
+
   app.use(morgan('combined')); // 배포모드일 때는 좀더 log가 자세해져서 실제 접속자 ip도 알 수 있으며 디도스나 해킹시도 할 수 있으면 차단할 수 도있다.
   app.use(hpp()); // Node에서 production 서버일 때는 hpp 랑 helmet은 필수이다 (보안)
   app.use(helmet()); // npm i pm2 cross-env helmet hpp
@@ -85,9 +89,11 @@ app.use(
     // secret이 해킹당하면 데이터가 노출될 수 있다. nodebirdsecret 키를 알면 정보들이 노출되기 떄문에 꽁꽁 숨겨놔야한다.
     // dotenv : 소스코드에 secret이 있으면 만약 소스코드가 해커에게 털렸다고 가정하면 그러면 비밀번호까지 다 노출된다.
     // 특히 config 파일에서 db 정보도 다 날라가기 때문에 이런것들은 따로 관리한다. (.env) npm i dotenv
+
+    // proxy: true, // 배포일 때 우분투에서 원격 true 변경 (nginx revers proxy 쓰기 때문에)
     cookie: {
       httpOnly: true,
-      secure: false,
+      secure: false, // 배포일 때 우분투에서 원격 true 변경
       domain: process.env.NODE_ENV === 'production' && '.nodemomobird.com',
     },
   })
@@ -113,6 +119,6 @@ app.use('/hashtag', hashtagRouter); // hashtag 가져오기
 // next(err) 정보 자체가 모두 에러 처리 미들웨어로 넘어가고 전부다 프론트서버로 넘어가기 때문에 그 기본 역할을 바꾸고싶으면 커스텀한다.
 // })
 
-app.listen(80, () => {
+app.listen(3065, () => {
   console.log('서버 실행 중!');
 });

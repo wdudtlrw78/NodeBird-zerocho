@@ -11,7 +11,13 @@ import relativeTime from 'dayjs/plugin/relativeTime';
 import PostImages from './PostImages';
 import CommentForm from './CommentForm';
 import PostCardContent from './PostCardContent';
-import { LIKE_POST_REQUEST, REMOVE_POST_REQUEST, UNLIKE_POST_REQUEST, RETWEET_REQUEST } from '../reducers/post';
+import {
+  LIKE_POST_REQUEST,
+  REMOVE_POST_REQUEST,
+  UNLIKE_POST_REQUEST,
+  RETWEET_REQUEST,
+  UPDATE_POST_REQUEST,
+} from '../reducers/post';
 import FollowButton from './FollowButton';
 
 dayjs.locale('ko');
@@ -22,6 +28,28 @@ const PostCard = ({ post }) => {
   const { removePostLoading } = useSelector((state) => state.post);
   const [CommentFormOpend, setCommentFormOpend] = useState(false);
   const id = useSelector((state) => state.user.me?.id); // optional channing id가 없으면 undifined 반환
+  const [editMode, setEditMode] = useState(false);
+
+  const onClickUpdate = useCallback(() => {
+    setEditMode(true);
+  }, []);
+
+  const onCancelUpdate = useCallback(() => {
+    setEditMode(false);
+  }, []);
+
+  const onChangePost = useCallback(
+    (editText) => () => {
+      dispatch({
+        type: UPDATE_POST_REQUEST,
+        data: {
+          PostId: post.id,
+          content: editText,
+        },
+      });
+    },
+    [post],
+  );
 
   const onLike = useCallback(() => {
     if (!id) {
@@ -95,7 +123,8 @@ const PostCard = ({ post }) => {
                 {/*로그인 했고 내 아이디가 게시글 작성자 아이디와 같으면 수정 삭제 가능 다르면 신고 버튼 */}
                 {id && post.User.id === id ? (
                   <>
-                    <Button>수정</Button>
+                    {/* 남의 게시글 리트윗한 경우 수정 안뜨게 */}
+                    {!post.RetweetId && <Button onClick={onClickUpdate}>수정</Button>}
                     <Button type="danger" loading={removePostLoading} onClick={onRemovePost}>
                       삭제
                     </Button>
@@ -129,7 +158,13 @@ const PostCard = ({ post }) => {
                 </Link>
               }
               title={post.Retweet.User.nickname}
-              description={<PostCardContent postData={post.Retweet.content} />}
+              description={
+                <PostCardContent
+                  postData={post.Retweet.content}
+                  onChangePost={onChangePost}
+                  onCancelUpdate={onCancelUpdate}
+                />
+              }
             />
           </Card>
         ) : (
@@ -147,7 +182,14 @@ const PostCard = ({ post }) => {
                 </Link>
               }
               title={post.User.nickname}
-              description={<PostCardContent postData={post.content} />}
+              description={
+                <PostCardContent
+                  editMode={editMode}
+                  onCancelUpdate={onCancelUpdate}
+                  onChangePost={onChangePost}
+                  postData={post.content}
+                />
+              }
             />
           </>
         )}

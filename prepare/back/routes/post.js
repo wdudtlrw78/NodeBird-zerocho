@@ -54,9 +54,8 @@ const upload = multer({
 
 router.post('/', isLoggedIn, upload.none(), async (req, res, next) => {
   // POST /post
-  const hashtags = req.body.content.match(/#[^\s#]+/g);
-
   try {
+    const hashtags = req.body.content.match(/#[^\s#]+/g);
     const post = await Post.create({
       content: req.body.content,
       UserId: req.user.id,
@@ -369,6 +368,47 @@ router.patch('/:postId/like', isLoggedIn, async (req, res, next) => {
     }
     await post.addLikers(req.user.id);
     res.json({ PostId: post.id, UserId: req.user.id }); // action.data부분
+  } catch (error) {
+    console.error(error);
+    next(error);
+  }
+});
+
+// 게시글 수정
+router.patch('/:postId', isLoggedIn, async (req, res, next) => {
+  // PATCH /post/1/
+  const hashtags = req.body.content.match(/#[^\s#]+/g);
+  try {
+    await Post.update(
+      {
+        content: req.body.content,
+      },
+      {
+        where: {
+          id: req.params.postId,
+          UserId: req.user.id,
+        },
+      }
+    );
+    const post = await Post.findOne({ where: { id: req.params.postId } });
+    if (hashtags) {
+      const result = await Promise.all(
+        hashtags.map(
+          (tag) =>
+            // create대신에 findOrCreate : 해시태그에 누가 '노드' 를 등록해놨으면 그냥 무시하고 등록 안해놨으면 그제서야 등록한다(가져오지는 않는다). 대신에 where로 감싸줘야 한다.
+            Hashtag.findOrCreate({
+              where: { name: tag.slice(1).toLowerCase() },
+            }) // slice(1)은 # 제거하고 ex) 리액트 노드만 저장하기 위해서 toLowerCase은 대문자로 REACT 적으나 소문자 react 적으나 똑같이 검색되게 하기 위해서
+          // 일부로 db에 저장할 때는 소문자로 저장되게 한다.
+        )
+      );
+      // findOrCreate 때문에([값, 불리언] 반환) result의 결과가 두번째가 생성된건지 불리언 값 [[노드, true], [리액트, true]]라서 map으로 첫번째꺼 추출.
+      await post.setHashtags(result.map((v) => v[0]));
+    }
+    res.status(200).json({
+      PostId: parseInt(req.params.postId, 10),
+      content: req.body.content,
+    });
   } catch (error) {
     console.error(error);
     next(error);
