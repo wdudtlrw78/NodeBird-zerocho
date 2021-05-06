@@ -1,7 +1,11 @@
-import React from 'react';
+import AppLayouts from '../components/AppLayouts';
 
-const index = () => {
-  return <div>Tset</div>;
+const Home = () => {
+  return (
+    <AppLayouts>
+      <div>Home</div>
+    </AppLayouts>
+  );
 };
 
-export default index;
+export default Home;
