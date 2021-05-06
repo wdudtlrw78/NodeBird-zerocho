@@ -1,9 +1,12 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ProTypes from 'prop-types';
 import Link from 'next/link';
-import { Menu } from 'antd';
+import { Menu, Input, Col, Row } from 'antd';
+import LoginForm from './LoginForm';
+import UserProfile from './UserProfile';
 
 const AppLayouts = ({ children }) => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   return (
     <div>
       <Menu mode="horizontal">
@@ -18,17 +21,36 @@ const AppLayouts = ({ children }) => {
           </Link>
         </Menu.Item>
         <Menu.Item>
+          <Input.Search enterButton style={{ verticalAlign: 'middle' }} />
+        </Menu.Item>
+        <Menu.Item>
           <Link href="/signup">
             <a>회원가입</a>
           </Link>
         </Menu.Item>
       </Menu>
-      {children}
+      <Row gutter={8}>
+        <Col xs={24} md={6}>
+          {isLoggedIn ? <UserProfile /> : <LoginForm />}
+        </Col>
+        <Col xs={24} md={12}>
+          {children}
+        </Col>
+        <Col xs={24} md={6}>
+          <a
+            href="https://www.google.com"
+            target="_blank"
+            rel="noreferrer noopener"
+          >
+            Google
+          </a>
+        </Col>
+      </Row>
     </div>
   );
 };
 
-AppLayouts.protoTyeps = {
+AppLayouts.proTypes = {
   children: ProTypes.node.isRequired,
 };
 
