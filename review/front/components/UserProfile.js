@@ -28,7 +28,7 @@ const UserProfile = ({ setIsLoggedIn }) => {
 };
 
 UserProfile.propTypes = {
-  setIsLoggedIn: PropTypes.node.isRequired,
+  setIsLoggedIn: PropTypes.func.isRequired,
 };
 
 export default UserProfile;

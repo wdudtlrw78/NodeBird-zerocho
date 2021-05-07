@@ -26,9 +26,6 @@
     "linebreak-style": "off",
     "max-len": "off",
     "spaced-comment": "off",
-    "no-param-reassign": "off",
-    "arrow-body-style": "off",
-    "react/jsx-wrap-multilines": "off",
-    "comma-dangle": "off"
+    "no-param-reassign": "off"
   }
 }
