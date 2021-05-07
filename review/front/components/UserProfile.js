@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { Card, Avater, Button } from 'antd';
+import { Card, Avatar, Button } from 'antd';
 import { useDispatch } from 'react-redux';
 import { logoutAction } from '../reducers';
 
@@ -24,7 +24,7 @@ const UserProfile = () => {
         </div>,
       ]}
     >
-      <Card.Meta title="MoMo" avatar={<Avater>MM</Avater>} />
+      <Card.Meta title="MoMo" avatar={<Avatar>MM</Avatar>} />
       <Button onClick={onLogOut}>로그아웃</Button>
     </Card>
   );
