@@ -62,7 +62,7 @@ const Signup = () => {
 
   const onSubmit = useCallback(() => {
     if (password !== passwordCheck) {
-      return setPasswordCheck(true);
+      return setPasswordError(true);
     }
 
     if (!term) {
