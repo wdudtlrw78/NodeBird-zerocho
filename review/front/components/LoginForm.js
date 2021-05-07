@@ -1,8 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useCallback } from 'react';
 import { Form, Input, Button } from 'antd';
 import styled from 'styled-components';
 import Link from 'next/link';
-import PropTypes from 'prop-types';
+import { useDispatch } from 'react-redux';
+import { logoutAction } from '../reducers';
+import useInput from '../hooks/useInput';
 
 const ButtonWrapper = styled.div`
   margin-top: 10px;
@@ -12,22 +14,15 @@ const FormWrapper = styled(Form)`
   padding: 10px;
 `;
 
-const LoginForm = ({ setIsLoggedIn }) => {
-  const [id, setId] = useState('');
-  const [password, setPassword] = useState('');
-
-  const onChangeId = useCallback((e) => {
-    setId(e.target.value);
-  }, []);
-
-  const onChangePassword = useCallback((e) => {
-    setPassword(e.target.value);
-  }, []);
+const LoginForm = () => {
+  const dispatch = useDispatch();
+  const [id, onChangeId] = useInput('');
+  const [password, onChangePassword] = useInput('');
 
   const onSubmitForm = useCallback(() => {
+    dispatch(logoutAction({ id, password }));
     console.log(id, password);
-    setIsLoggedIn(true);
-  }, []);
+  }, [id, password]);
 
   return (
     <FormWrapper onFinish={onSubmitForm}>
@@ -39,13 +34,7 @@ const LoginForm = ({ setIsLoggedIn }) => {
       <div>
         <label htmlFor="user-password">비밀번호</label>
       </div>
-      <Input
-        name="user-password"
-        type="password"
-        value={password}
-        onChange={onChangePassword}
-        required
-      />
+      <Input name="user-password" type="password" value={password} onChange={onChangePassword} required />
       <ButtonWrapper>
         <Button type="primary" htmlType="submit" loading={false}>
           로그인
@@ -58,10 +47,6 @@ const LoginForm = ({ setIsLoggedIn }) => {
       </ButtonWrapper>
     </FormWrapper>
   );
-};
-
-LoginForm.propTypes = {
-  setIsLoggedIn: PropTypes.node.isRequired,
 };
 
 export default LoginForm;
