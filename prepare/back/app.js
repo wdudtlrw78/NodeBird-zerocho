@@ -119,6 +119,12 @@ app.use('/hashtag', hashtagRouter); // hashtag 가져오기
 // next(err) 정보 자체가 모두 에러 처리 미들웨어로 넘어가고 전부다 프론트서버로 넘어가기 때문에 그 기본 역할을 바꾸고싶으면 커스텀한다.
 // })
 
-app.listen(3065, () => {
-  console.log('서버 실행 중!');
-});
+if (process.env.NODE.ENV === 'production') {
+  app.listen(80, () => {
+    console.log('서버 실행 중!');
+  });
+} else {
+  app.listen(3065, () => {
+    console.log('서버 실행 중!');
+  });
+}
