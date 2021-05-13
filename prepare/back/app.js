@@ -33,7 +33,7 @@ passportConfig();
 if (process.env.NODE.ENV === 'production') {
   // 배포일 때 우분투에서 원격 추가 (nginx revers proxy 쓰기 때문에)
   // nginx revers proxy는 강의 설명 초반 확인
-  // app.set('trust proxy', 1);
+  app.set('trust proxy', 1);
 
   app.use(morgan('combined')); // 배포모드일 때는 좀더 log가 자세해져서 실제 접속자 ip도 알 수 있으며 디도스나 해킹시도 할 수 있으면 차단할 수 도있다.
   app.use(hpp()); // Node에서 production 서버일 때는 hpp 랑 helmet은 필수이다 (보안)
