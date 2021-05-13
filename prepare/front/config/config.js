@@ -1,1 +1,1 @@
-export const backUrl = 'http://3.34.215.96';
+export const backUrl = 'http://localhost:3065'; // 우분투에서 따로 https://api.nodemomobird.com 설정

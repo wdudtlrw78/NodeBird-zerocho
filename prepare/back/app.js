@@ -40,7 +40,7 @@ if (process.env.NODE.ENV === 'production') {
   app.use(helmet()); // npm i pm2 cross-env helmet hpp
   app.use(
     cors({
-      origin: 'http://nodemomobird.com', // * 대신 true설정하면 보낸 곳의 주소가 자동으로 들어가 편리
+      origin: 'https://nodemomobird.com', // * 대신 true설정하면 보낸 곳의 주소가 자동으로 들어가 편리
       credentials: true, // 쿠키도 같이 전달
     })
   );
@@ -48,7 +48,7 @@ if (process.env.NODE.ENV === 'production') {
   app.use(morgan('dev')); // 프론트에서 백엔드 요청 보낼 때 어떤 요청들 보냈는지 기록 (백엔드에서 디버깅하기 편리)
   app.use(
     cors({
-      origin: 'http://localhost:3060', // * 대신 true설정하면 보낸 곳의 주소가 자동으로 들어가 편리
+      origin: true, // * 대신 true설정하면 보낸 곳의 주소가 자동으로 들어가 편리
       credentials: true, // 쿠키도 같이 전달
     })
   );
@@ -90,10 +90,10 @@ app.use(
     // dotenv : 소스코드에 secret이 있으면 만약 소스코드가 해커에게 털렸다고 가정하면 그러면 비밀번호까지 다 노출된다.
     // 특히 config 파일에서 db 정보도 다 날라가기 때문에 이런것들은 따로 관리한다. (.env) npm i dotenv
 
-    // proxy: true, // 배포일 때 우분투에서 원격 true 변경 (nginx revers proxy 쓰기 때문에)
+    proxy: rocess.env.NODE_ENV === 'production' ? true : false, // 배포일 때 우분투에서 원격 true 변경 (nginx revers proxy 쓰기 때문에)
     cookie: {
       httpOnly: true,
-      secure: false, // 배포일 때 우분투에서 원격 true 변경
+      secure: process.env.NODE_ENV === 'production' ? true : false, // 배포일 때 우분투에서 원격 true 변경
       domain: process.env.NODE_ENV === 'production' && '.nodemomobird.com',
     },
   })
@@ -119,6 +119,12 @@ app.use('/hashtag', hashtagRouter); // hashtag 가져오기
 // next(err) 정보 자체가 모두 에러 처리 미들웨어로 넘어가고 전부다 프론트서버로 넘어가기 때문에 그 기본 역할을 바꾸고싶으면 커스텀한다.
 // })
 
-app.listen(3065, () => {
-  console.log('서버 실행 중!');
-});
+if (process.env.NODE_ENV === 'production') {
+  app.listen(3065, () => {
+    console.log('서버 실행 중!');
+  });
+} else {
+  app.listen(80, () => {
+    console.log('서버 실행 중!');
+  });
+}
