@@ -15,7 +15,7 @@ export const initialState = {
           src: './images/KakaoTalk_20210221_202520730.jpg',
         },
       ],
-      Contents: [
+      Comments: [
         {
           User: {
             nickname: 'MOMO',
