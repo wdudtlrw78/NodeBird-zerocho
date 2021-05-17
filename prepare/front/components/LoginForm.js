@@ -31,7 +31,6 @@ const LoginForm = () => {
     // antd 에서는 자동 e.preventDefault가 적용되어있다.
 
     // setIsLoggedIn(true);
-    console.log(email, password);
     dispatch(loginRequestAction({ email, password }));
   }, [email, password]);
 
