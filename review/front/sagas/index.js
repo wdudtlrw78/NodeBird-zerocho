@@ -1,24 +1,25 @@
-import { all, fork, call, take, put } from 'redux-saga/effects';
-import axios from 'axios';
+import { all, fork, put, takeEvery, delay } from 'redux-saga/effects';
+// import axios from 'axios';
 
-function logInAPI(data) {
-  return axios.post('/api/login', data);
-}
+// function logInAPI(data) {
+//   return axios.post('/api/login', data);
+// }
 
-function logOutAPI() {
-  return axios.post('/api/logout');
-}
+// function logOutAPI() {
+//   return axios.post('/api/logout');
+// }
 
-function addPostAPI() {
-  return axios.post('/api/post');
-}
+// function addPostAPI() {
+//   return axios.post('/api/post');
+// }
 
 function* logIn(action) {
   try {
-    const result = yield call(logInAPI, action.data);
+    // const result = yield call(logInAPI, action.data);
+    yield delay(1000);
     yield put({
       type: 'LOG_IN_SUCCESS',
-      data: result.data,
+      // data: result.data,
     });
   } catch (err) {
     yield put({
@@ -30,10 +31,11 @@ function* logIn(action) {
 
 function* logOut() {
   try {
-    const result = yield call(logOutAPI);
+    // const result = yield call(logOutAPI);
+    yield delay(1000);
     yield put({
       type: 'LOG_OUT_SUCCESS',
-      data: result.data,
+      // data: result.data,
     });
   } catch (err) {
     yield put({
@@ -45,10 +47,11 @@ function* logOut() {
 
 function* addPost() {
   try {
-    const result = yield call(addPostAPI);
+    // const result = yield call(addPostAPI);
+    yield delay(1000);
     yield put({
       type: 'ADD_POST_SUCCESS',
-      data: result.data,
+      // data: result.data,
     });
   } catch (err) {
     yield put({
@@ -59,15 +62,15 @@ function* addPost() {
 }
 
 function* watchLogin() {
-  yield take('LOG_IN_REQUEST', logIn);
+  yield takeEvery('LOG_IN_REQUEST', logIn);
 }
 
 function* watchLogOut() {
-  yield take('LOG_OUT_REQUEST', logOut);
+  yield takeEvery('LOG_OUT_REQUEST', logOut);
 }
 
 function* watchAddPost() {
-  yield take('ADD_POST_REQUEST', addPost);
+  yield takeEvery('ADD_POST_REQUEST', addPost);
 }
 
 export default function* rootSaga() {
