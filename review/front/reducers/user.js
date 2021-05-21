@@ -5,21 +5,58 @@ export const initialState = {
   loginData: {},
 };
 
+export function loginAction(data) {
+  return (dispatch) => {
+    dispatch(loginRequestAction());
+    axios.post('/api/login').then(() => {
+      dispatch(loginSuccessAction());
+    });
+  };
+}
+
 // action creator
 
-export function loginAction(data) {
+export const loginRequestAction = (data) => {
   return {
-    type: 'LOG_IN',
+    type: 'LOG_IN_REQUEST',
     data,
   };
-}
+};
 
-export function logoutAction(data) {
+export const loginSuccessAction = (data) => {
   return {
-    type: 'LOG_OUT',
+    type: 'LOG_IN_SUCCESS',
     data,
   };
-}
+};
+
+export const loginFallureAction = (data) => {
+  return {
+    type: 'LOG_IN_FAIURE',
+    data,
+  };
+};
+
+export const logoutRequestAction = (data) => {
+  return {
+    type: 'LOG_OUT_REQUEST',
+    data,
+  };
+};
+
+export const logoutSuccessAction = (data) => {
+  return {
+    type: 'LOG_OUT_SUCCESS',
+    data,
+  };
+};
+
+export const logoutFailureAction = (data) => {
+  return {
+    type: 'LOG_OUT_FAILURE',
+    data,
+  };
+};
 
 const reducer = (state = initialState, action) => {
   switch (action.type) {
