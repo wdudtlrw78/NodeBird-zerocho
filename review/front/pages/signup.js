@@ -2,6 +2,8 @@ import Head from 'next/head';
 import React, { useCallback, useState } from 'react';
 import { Form, Input, Checkbox, Button } from 'antd';
 import styled from 'styled-components';
+import { useDispatch, useSelector } from 'react-redux';
+import { SIGN_UP_REQUEST } from '../reducers/user';
 import AppLayouts from '../components/AppLayouts';
 import useInput from '../hooks/useInput';
 
@@ -10,6 +12,9 @@ const ErrorMessage = styled.div`
 `;
 
 const Signup = () => {
+  const dispatch = useDispatch();
+  const { signUpLoading } = useSelector((state) => state.user);
+
   const [email, onChangeEmail] = useInput('');
   const [nickname, onChangeNickname] = useInput('');
   const [password, onChangePassword] = useInput('');
@@ -35,6 +40,11 @@ const Signup = () => {
     if (password !== passwordCheck) return setPasswordError(true);
     if (!term) return setTermError(true);
     console.log(email, nickname, password);
+
+    dispatch({
+      type: SIGN_UP_REQUEST,
+      data: { email, nickname, password },
+    });
   }, [email, password, passwordCheck, term]);
 
   return (
@@ -77,7 +87,7 @@ const Signup = () => {
           {termError && <ErrorMessage>약관에 동의하셔야 합니다.</ErrorMessage>}
         </div>
         <div style={{ marginTop: 10 }}>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" loading={signUpLoading}>
             가입하기
           </Button>
         </div>

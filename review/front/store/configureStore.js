@@ -14,7 +14,8 @@ const loggerMiddleware =
     return next(action);
   };
 
-const configureStore = () => {
+const configureStore = (context) => {
+  console.log(context);
   const sagaMiddleware = createSagaMiddleware();
   const middlewares = [sagaMiddleware, loggerMiddleware];
   const enhancer =
@@ -23,7 +24,7 @@ const configureStore = () => {
       : composeWithDevTools(applyMiddleware(...middlewares));
   const stroe = createStore(reducer, enhancer);
 
-  stroe.sagaTask = sagaMiddleware(rootSaga);
+  stroe.sagaTask = sagaMiddleware.run(rootSaga);
 
   return stroe;
 };
