@@ -2,15 +2,17 @@ import React, { useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import { Card, Button, Avatar, Popover, List, Comment } from 'antd';
 import { RetweetOutlined, HeartOutlined, MessageOutlined, EllipsisOutlined, HeartTwoTone } from '@ant-design/icons';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import PostImages from './PostImages';
 import CommentForm from './CommentForm';
 import PostCardContent from './PostCardContent';
+import { REMOVE_POST_REQUEST } from '../../../prepare/front/reducers/post';
 
 const PostCard = ({ post }) => {
+  const dispatch = useDispatch();
+  const { removePostLoading } = useSelector((state) => state.post);
   const [liked, setLiked] = useState(false);
   const [CommentFormOpend, setCommentFormOpend] = useState(false);
-  const id = useSelector((state) => state.user.me?.id); // optional channing id가 없으면 undifined 반환
 
   const onToggleLike = useCallback(() => {
     setLiked((prev) => !prev);
@@ -19,6 +21,15 @@ const PostCard = ({ post }) => {
   const onToggleComment = useCallback(() => {
     setCommentFormOpend((prev) => !prev);
   }, []);
+
+  const onRemovePost = useCallback(() => {
+    dispatch({
+      type: REMOVE_POST_REQUEST,
+      data: post.id,
+    });
+  }, []);
+
+  const id = useSelector((state) => state.user.me?.id); // optional channing id가 없으면 undifined 반환
 
   return (
     <div style={{ marginBottom: 20 }}>
@@ -41,7 +52,9 @@ const PostCard = ({ post }) => {
                 {id && post.User.id === id ? (
                   <>
                     <Button>수정</Button>
-                    <Button type="danger">삭제</Button>
+                    <Button type="danger" loading={removePostLoading} onClick={onRemovePost}>
+                      삭제
+                    </Button>
                   </>
                 ) : (
                   <Button>신고</Button>
