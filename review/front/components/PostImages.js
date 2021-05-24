@@ -19,6 +19,7 @@ const PostImages = ({ images }) => {
       <>
         {/* role: 시각장애인분들을 위해 스크린 리더에서 굳이 얘를 클릭 할 필요있다 여부를 안알려줄때만 넣어준다. */}
         <img role="presentation" src={images[0].src} alt={images[0].src} onClick={onZoom} />
+        {showImagesZoom && <ImagesZoom images={images} onClose={onClose} />}
       </>
     );
   }
@@ -77,7 +78,7 @@ const PostImages = ({ images }) => {
 };
 
 PostImages.propTypes = {
-  images: ProTypes.arrayOf(ProTypes.object),
+  images: ProTypes.arrayOf(ProTypes.object).isRequired,
 };
 
 export default PostImages;
