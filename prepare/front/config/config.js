@@ -1,1 +1,1 @@
-export const backUrl = 'http://localhost:3065'; // 우분투에서 따로 https://api.nodemomobird.com 설정
+export const backUrl = process.env.NODE_ENV === 'production' ? 'https://api.nodemomobird.com' : 'http://localhost:3065';

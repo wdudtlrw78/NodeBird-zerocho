@@ -113,7 +113,8 @@ const PostCard = ({ post }) => {
           liked ? (
             <HeartTwoTone twoToneColor="#eb2f96" key="heart" onClick={onUnLike} />
           ) : (
-            <HeartOutlined key="heart" onClick={onLike} />
+            <HeartOutlined key="heart" onClick={onLike} /
+            >
           ),
           <MessageOutlined key="comment" onClick={onToggleComment} />,
           <Popover
