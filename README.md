@@ -105,15 +105,6 @@
 
   <br>
 
-## Ant Design
-
-  <br>
-
-```
-npm i antd
-npm i @ant-design/icons
-```
-
 <br>
 
 ## Redux
@@ -220,11 +211,6 @@ action 기록들이 전부 남아있기 때문에 action 하나 실행 할때마
   - action 하나 하나 호출할 때 마다 점점 메모리가 커지는데 배포모드로 변경하면 history 보는 내역들이 필요없어져서 버리게 된다.
 - 배포모드로 변경하면 histort를 중간마다 계속 버린다.
   - 메모리 정리
-
-## dummyData Tip
-
-- shortid
-- faker
 
 ## react-virtualized를 활용한 무한 스크롤
 
